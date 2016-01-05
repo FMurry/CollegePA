@@ -1,0 +1,33 @@
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="collegessentials.fwm.collegepa.CourseFragment"
+    android:id="@+id/swipe_refresh">
+
+    <!-- TODO: Update blank fragment layout -->
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recycler_view">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/tv_no_courses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Press + to add some Courses"
+        android:layout_gravity="center"
+        android:textSize="30dp"
+        android:gravity="center"/>
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/nc_icon"
+        android:layout_below="@id/tv_no_courses"
+        android:src="@drawable/ic_book_open_grey600_48dp"
+        android:layout_gravity="center_horizontal|top" />
+
+</android.support.v4.widget.SwipeRefreshLayout>

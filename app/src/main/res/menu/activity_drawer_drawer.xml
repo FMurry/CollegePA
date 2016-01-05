@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Contains List of objects-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_Courses"
+            android:icon="@drawable/ic_book_open_grey600_48dp"
+            android:title="Courses" />
+        <item
+            android:id="@+id/nav_Assignments"
+            android:icon="@drawable/ic_note_text_grey600_48dp"
+            android:title="Assignments" />
+
+    </group>
+
+    <item android:title="Other">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_Account"
+                    android:icon="@drawable/ic_account_grey600_48dp"
+                    android:title="Account" />
+                <item
+                    android:id="@+id/nav_Settings"
+                    android:icon="@drawable/ic_settings_black_48dp"
+                    android:title="Settings" />
+                <item
+                    android:id="@+id/nav_About"
+                    android:icon="@drawable/ic_information_grey600_48dp"
+                    android:title="About" />
+                <item
+                    android:id="@+id/nav_Contact"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="Contact Us" />
+                <item
+                    android:id="@+id/nav_Log_out"
+                    android:icon="@drawable/ic_logout_grey600_48dp"
+                    android:title="Log Out"/>
+            </group>
+        </menu>
+    </item>
+
+</menu>

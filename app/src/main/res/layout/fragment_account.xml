@@ -1,0 +1,64 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="collegessentials.fwm.collegepa.AccountFragment"
+    >
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/account_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="Hello"
+            android:textSize="24dip"
+            android:layout_margin="24dp"
+            />
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/account_pic"
+            android:src="@drawable/ic_account_black_48dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_below="@id/account_welcome"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/account_log_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30dip"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="24dp"
+            android:textColor="#fff"
+            android:text="Log Out"
+            android:layout_centerHorizontal="true"
+            android:onClick="OnClick"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/account_email"
+            android:text="email"
+            android:layout_below="@id/account_pic"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/warning_account"
+            android:layout_above="@id/account_log_out"
+            android:text="@string/warning_account"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center_horizontal"
+            android:layout_margin="15dp"/>
+
+
+    </RelativeLayout>
+</FrameLayout>
