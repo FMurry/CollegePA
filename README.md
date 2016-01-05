@@ -3,14 +3,14 @@ Welcome to the College Planner Assistant app! This app is a Tasking app for coll
 
 Sign Up Page:
 <br>
-![alt tag](https://github.com/FMurry/CollegePA/Screenshots/signup.png)
+![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/signup.png)
 <br>
 Login Page:
 <br>
-![alt tag](https://github.com/FMurry/CollegePA/Screenshots/login.png)
+![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/login.png)
 
 <br>
-![alt tag](https://github.com/FMurry/CollegePA/Screenshots/Course.png)
+![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/Course.png)
 
 <br>
 Maintained by Frederic Murry and Erick Vazquez
