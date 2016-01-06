@@ -99,7 +99,7 @@ public class addCourseActivity extends AppCompatActivity {
                     courseObj.put("CourseName",course.getCourseFullName());
                     courseObj.put("CourseID",course.getCourseName());
                     courseObj.put("Type",course.getType());
-                    courseObj.saveInBackground();
+                    courseObj.saveEventually();
                     setResult(Activity.RESULT_OK, null);
                     finish();
                 }

@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.login_forgot_password)TextView forgotPassword;
 
     private String postSignEmail;
+    private ParseUser user;
 
 
     @Override
@@ -177,6 +178,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess(){
         loginButton.setEnabled(true);
+        user = ParseUser.getCurrentUser();
+        user.put("deviceName", Build.MODEL);
+        user.saveEventually();
         setResult(Activity.RESULT_OK, null);
         finish();
     }

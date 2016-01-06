@@ -2,6 +2,8 @@ package simplify.fwm.collegepa;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,6 +46,7 @@ public class CourseFragment extends Fragment {
     private ImageView ncIcon;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ParseQuery<ParseObject> courseQuery;
+    private ParseQuery<ParseObject> offlineCourseQuery;
     private int size;
 
 
@@ -74,12 +77,6 @@ public class CourseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        courseQuery = ParseQuery.getQuery("Course");
-        courseQuery.whereEqualTo("createdby", ParseUser.getCurrentUser());
-        courseQuery.orderByAscending("CourseID");
-
-
     }
 
     @Override
@@ -95,26 +92,51 @@ public class CourseFragment extends Fragment {
 
         rvLayout = new LinearLayoutManager(v.getContext());
         recycler.setLayoutManager(rvLayout);
-        courseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> courseList, ParseException e) {
-                if (e == null) {
-                    Log.d(TAG, "Retrieved" + courseList.size());
-                    courses = new ArrayList<Course>();
-                    ParseCourses(courseList);
-                    rvAdapter = new CourseCardAdapter(courses);
-                    Log.d(TAG, "course size: " + courses.size());
-                    recycler.setAdapter(rvAdapter);
-                    Log.d(TAG, "Adapter Set");
-                    if (size != 0) {
-                        ncIcon.setVisibility(View.INVISIBLE);
-                        noCourses.setVisibility(View.INVISIBLE);
+        courseQuery = ParseQuery.getQuery("Course");
+        courseQuery.whereEqualTo("createdby", ParseUser.getCurrentUser());
+        courseQuery.orderByAscending("CourseID");
+
+        offlineCourseQuery = ParseQuery.getQuery("Course");
+        offlineCourseQuery.fromLocalDatastore();
+        offlineCourseQuery.whereEqualTo("createdby", ParseUser.getCurrentUser());
+
+        //If User is back online save the courses that are not in cloud
+        if(offlineCourseQuery!=null && isConnected()){
+            offlineCourseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    for (ParseObject o : objects) {
+                        o.saveEventually();
                     }
-                } else {
-                    e.printStackTrace();
                 }
-            }
-        });
+            });
+        }
+        //If there is network available find all data from cloud
+        if(isConnected()) {
+            Log.d(TAG,"Retrieving from Cloud");
+            courseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> courseList, ParseException e) {
+                    Log.d(TAG,"Entered Done for Online");
+                    if (e == null) {
+                        Log.d(TAG, "Retrieved " + courseList.size()+" from Cloud");
+                        courses = new ArrayList<Course>();
+                        ParseCourses(courseList);
+                        rvAdapter = new CourseCardAdapter(courses);
+                        Log.d(TAG, "course size: " + courses.size());
+                        recycler.setAdapter(rvAdapter);
+                        Log.d(TAG, "Adapter Set");
+                        if (size != 0) {
+                            ncIcon.setVisibility(View.GONE);
+                            noCourses.setVisibility(View.GONE);
+                        }
+                    } else {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
         swipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -125,7 +147,7 @@ public class CourseFragment extends Fragment {
                     public void run() {
 
                     }
-                },3000);
+                }, 3000);
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -152,6 +174,7 @@ public class CourseFragment extends Fragment {
             throw new ClassCastException(context.toString()+
                     "Must Implement OnFragmentInteractionListener");
         }
+
     }
 
     @Override
@@ -160,6 +183,10 @@ public class CourseFragment extends Fragment {
         mListener = null;
     }
 
+    /**
+     * Pulls Objects from parse when connection is available
+     * @param objects
+     */
     public void ParseCourses(List<ParseObject> objects){
 
         size = objects.size();
@@ -174,6 +201,9 @@ public class CourseFragment extends Fragment {
 
     }
 
+    /**
+     * Update all items on fragment
+     */
     public void Refresh(){
         Fragment fragment = this;
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -182,5 +212,17 @@ public class CourseFragment extends Fragment {
         fragmentTransaction.commit();
         recycler.setAdapter(null);
 
+    }
+
+
+    /**
+     * Determines whether android device has an internet connection
+     * @return true if connected to internet false if not
+     */
+    public boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager)this.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean connected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        return connected;
     }
 }
