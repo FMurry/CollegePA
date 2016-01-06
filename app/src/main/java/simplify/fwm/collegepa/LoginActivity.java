@@ -2,7 +2,10 @@ package simplify.fwm.collegepa;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -96,6 +99,14 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        if(!isConnected()){
+           onLoginFailed();
+            Toast.makeText(this,"No connection",Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(ParseUser.getCurrentUser()!=null){
+            ParseUser.logOut();
+        }
         loginButton.setEnabled(true);
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -171,8 +182,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginFailed(){
-        Toast.makeText(getBaseContext(), "Login Incorrect",Toast.LENGTH_LONG).show();
-
         loginButton.setEnabled(true);
     }
 
@@ -228,8 +237,8 @@ public class LoginActivity extends AppCompatActivity {
             ParseUser.requestPasswordResetInBackground(currentEmail, new RequestPasswordResetCallback() {
                 @Override
                 public void done(ParseException e) {
-                    if(e == null){
-                        Toast.makeText(getBaseContext(),"Check Email to Reset",Toast.LENGTH_LONG).show();
+                    if (e == null) {
+                        Toast.makeText(getBaseContext(), "Check Email to Reset", Toast.LENGTH_LONG).show();
                         new android.os.Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -237,13 +246,12 @@ public class LoginActivity extends AppCompatActivity {
 
                             }
                         }, 2000);
-                        if(ParseUser.getCurrentUser()!=null){
+                        if (ParseUser.getCurrentUser() != null) {
                             ParseUser.logOut();
                         }
 
-                    }
-                    else{
-                        Toast.makeText(getBaseContext(),"Email Not found, Please sign up",Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getBaseContext(), "Email Not found, Please sign up", Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                         new android.os.Handler().postDelayed(new Runnable() {
                             @Override
@@ -256,6 +264,17 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    /**
+     * Determines whether android device has an internet connection
+     * @return
+     */
+    public boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean connected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        return connected;
     }
 }
 
