@@ -1,80 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginBottom="10dp"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_vertical">
+    android:layout_gravity="center_vertical"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
 
 
-
-
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="125dp"
-        card_view:cardElevation="4dp"
-        card_view:cardCornerRadius="2dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="0dp"
+        android:layout_gravity="center"
         android:layout_marginBottom="4dp"
-        card_view:cardBackgroundColor="#fff">
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="0dp"
+        card_view:cardBackgroundColor="#fff"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardElevation="4dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <TextView
+                android:id="@+id/cv_course_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/cv_course_id"
                 android:layout_alignParentTop="true"
+                android:background="@color/colorPrimaryDark"
+                android:gravity="center_horizontal"
                 android:text="Course ID"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:background="@color/colorPrimaryDark"
-                android:textColor="@color/colorPrimaryText"
-                android:gravity="center_horizontal"/>
+                android:textColor="@color/colorPrimaryText" />
 
             <TextView
+                android:id="@+id/cv_course_days"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/cv_course_days"
-                android:text="M W"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
+                android:text="M W"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/cv_grade"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/colorPrimaryText"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="8dp"
-                android:text="80"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="8dp"
+                android:text="80"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/colorPrimaryText" />
+
+            <TextView
                 android:id="@+id/cv_course_type"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_above="@id/cv_course_days"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/cv_course_days"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ImageButton
+                android:id="@+id/cv_course_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/cv_course_icon"
                 android:layout_below="@id/cv_course_id"
                 android:background="#fff"
-                android:src="@drawable/ic_code_array_black_48dp"/>
-
+                android:src="@drawable/ic_code_array_black_48dp" />
 
 
         </RelativeLayout>
