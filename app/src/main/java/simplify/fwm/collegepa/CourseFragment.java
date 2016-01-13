@@ -32,19 +32,22 @@ import com.parse.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import simplify.fwm.collegepa.Course.Course;
 import simplify.fwm.collegepa.DataStructure.CourseCardAdapter;
 
 
 public class CourseFragment extends Fragment {
 
+    @Bind(R.id.recycler_view) RecyclerView recycler;
+    @Bind(R.id.tv_no_courses) TextView noCourses;
+    @Bind(R.id.nc_icon) ImageView ncIcon;
+    @Bind(R.id.swipe_refresh)SwipeRefreshLayout swipeRefreshLayout;
+
     private List<Course> courses;
-    private RecyclerView recycler;
     private RecyclerView.LayoutManager rvLayout;
     private RecyclerView.Adapter rvAdapter;
-    private TextView noCourses;
-    private ImageView ncIcon;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private ParseQuery<ParseObject> courseQuery;
     private ParseQuery<ParseObject> offlineCourseQuery;
     private int size;
@@ -82,12 +85,9 @@ public class CourseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_course, container, false);
-
-        ncIcon = (ImageView)v.findViewById(R.id.nc_icon);
-        noCourses = (TextView)v.findViewById(R.id.tv_no_courses);
+        ButterKnife.bind(this,v);
 
 
-        recycler = (RecyclerView)v.findViewById(R.id.recycler_view);
         recycler.setHasFixedSize(true);
 
         rvLayout = new LinearLayoutManager(v.getContext());
@@ -137,7 +137,6 @@ public class CourseFragment extends Fragment {
             });
         }
 
-        swipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

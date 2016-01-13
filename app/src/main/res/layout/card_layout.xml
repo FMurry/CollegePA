@@ -54,6 +54,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cv_grade"
                 android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/colorPrimaryText"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="8dp"
@@ -71,7 +72,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cv_course_icon"
                 android:layout_below="@id/cv_course_id"
-                android:background="#fff" />
+                android:background="#fff"
+                android:src="@drawable/ic_code_array_black_48dp"/>
 
 
 

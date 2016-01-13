@@ -12,6 +12,9 @@ import android.widget.TextView;
 
 import com.parse.ParseUser;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,11 +28,13 @@ public class AccountFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-    private ImageView accountIcon;
-    private TextView logOut;
-    private TextView welcome;
-    private TextView displayEmail;
-    private TextView warning;
+    @Bind(R.id.account_pic)ImageView accountIcon;
+    @Bind(R.id.account_log_out)TextView logOut;
+    @Bind(R.id.account_welcome)TextView welcome;
+    @Bind(R.id.account_email) TextView displayEmail;
+    @Bind(R.id.warning_account) TextView warning;
+
+
     // TODO: Rename and change types of parameters
 
     private OnFragmentInteractionListener mListener;
@@ -59,14 +64,18 @@ public class AccountFragment extends Fragment {
 
     }
 
+    /**
+     * Method that is called when views are created this is where we can initialize views
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_account,container,false);
-        accountIcon = (ImageView)v.findViewById(R.id.account_pic);
-        logOut = (TextView)v.findViewById(R.id.account_log_out);
-        welcome = (TextView)v.findViewById(R.id.account_welcome);
-        displayEmail = (TextView)v.findViewById(R.id.account_email);
-        warning = (TextView)v.findViewById(R.id.warning_account);
+        ButterKnife.bind(this,v);
+
         ParseUser current = ParseUser.getCurrentUser();
         if(current != null) {
             if (current.getBoolean("emailVerified")) {

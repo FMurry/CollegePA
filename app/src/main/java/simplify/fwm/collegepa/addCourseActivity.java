@@ -95,10 +95,7 @@ public class addCourseActivity extends AppCompatActivity {
                     Course course = new Course(name,fullName,type);
                     Log.d(TAG, "Submitting Course");
                     ParseObject courseObj = new ParseObject("Course");
-                    courseObj.put("createdby", ParseUser.getCurrentUser());
-                    courseObj.put("CourseName",course.getCourseFullName());
-                    courseObj.put("CourseID",course.getCourseName());
-                    courseObj.put("Type",course.getType());
+                    course.SaveToParse(courseObj);
                     courseObj.saveEventually();
                     setResult(Activity.RESULT_OK, null);
                     finish();

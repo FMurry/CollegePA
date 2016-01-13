@@ -31,6 +31,8 @@ package simplify.fwm.collegepa;
         import com.parse.ParseObject;
         import com.parse.ParseUser;
 
+        import butterknife.Bind;
+        import butterknife.ButterKnife;
         import simplify.fwm.collegepa.Course.Course;
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -40,34 +42,31 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private static final int REQUEST_ADD = 2;
     private static final String TAG="DrawerActivity";
 
-    private DrawerLayout drawer;
+    @Bind(R.id.drawer_layout) DrawerLayout drawer;
+    @Bind(R.id.nav_view) NavigationView navigationView;
+    @Bind(R.id.toolbar)Toolbar toolbar;
+    @Bind(R.id.main_layout) RelativeLayout mainLayout;
+
     private ActionBarDrawerToggle toggle;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
     private ParseUser currentUser;
     private TextView userName;
     private TextView userEmail;
     private boolean loggedIn;
-    private RelativeLayout mainLayout;
     private MenuItem account_drawer;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_drawer);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         toolbar.setTitle("Courses");
         setSupportActionBar(toolbar);
 
         currentUser = ParseUser.getCurrentUser();
-        mainLayout = (RelativeLayout)findViewById(R.id.main_layout);
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         try {

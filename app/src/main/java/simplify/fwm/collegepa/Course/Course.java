@@ -4,6 +4,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -12,7 +15,7 @@ import java.util.ArrayList;
 /**
  * Created by fredericmurry on 11/26/15.
  */
-public class Course implements Parcelable, Comparable<Course>{
+public class Course implements Comparable<Course>{
     private int id;
     private String courseName;
     private String courseFullName;
@@ -86,19 +89,7 @@ public class Course implements Parcelable, Comparable<Course>{
         assignments = new ArrayList<>();
     }
 
-    /**
-     * Parcel constructor to assist with data management
-     * @param in Parcel
-     */
-    public Course(Parcel in){
-        String[] data = new String[4];
-        in.readStringArray(data);
-        courseName = in.readString();
-        courseFullName = in.readString();
-        type =in.readString();
-        grade = in.readString();
-        in.readTypedList(assignments, Course.CREATOR);
-    }
+
     /*       Accessors         */
 
     public int getId(){
@@ -152,9 +143,7 @@ public class Course implements Parcelable, Comparable<Course>{
         }
         return newType;
     }
-    public Professor getProfessor(){
-        return professor;
-    }
+    public Professor getProfessor(){return professor;}
 
     public String getGrade(){
         if(Integer.valueOf(grade) >= 0){
@@ -178,75 +167,15 @@ public class Course implements Parcelable, Comparable<Course>{
         this.type = type;
     }
 
-    public void setGrade(String grade) {
-        this.grade = grade;
-    }
+    public void setGrade(String grade) {this.grade = grade;}
 
-    public void setProfessor(Professor professor){
-        this.professor = professor;
-    }
+    public void setProfessor(Professor professor){this.professor = professor;}
 
     public void setAssignments(ArrayList assignments){this.assignments = assignments; }
 
-    /**
-     * Describe the kinds of special objects contained in this Parcelable's
-     * marshalled representation.
-     *
-     * @return a bitmask indicating the set of special object types marshalled
-     * by the Parcelable.
-     */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    /**
-     * Flatten this object in to a Parcel.
-     *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[]{courseName,courseFullName,type,grade});
-        dest.writeString(courseName);
-        dest.writeString(courseFullName);
-        dest.writeString(type);
-        dest.writeString(grade);
-        dest.writeTypedList(assignments);
-    }
 
-    public static final Parcelable.Creator CREATOR = new Creator<Course>() {
-        /**
-         * Create a new instance of the Parcelable class, instantiating it
-         * from the given Parcel whose data had previously been written by
-         * {@link Parcelable#writeToParcel Parcelable.writeToParcel()}.
-         *
-         * @param source The Parcel to read the object's data from.
-         * @return Returns a new instance of the Parcelable class.
-         */
-        @Override
-        public Course createFromParcel(Parcel source) {
-            return new Course(source);
-        }
 
-        /**
-         * Create a new array of the Parcelable class.
-         *
-         * @param size Size of the array.
-         * @return Returns an array of the Parcelable class, with every entry
-         * initialized to null.
-         */
-        @Override
-        public Course[] newArray(int size) {
-            return new Course[0];
-        }
-    };
-    public JSONObject getJSONProfessor(){
-        JSONObject prof = professor.getJSON();
-        return prof;
-    }
 
     /**
      * Compares this object to the specified object to determine their relative
@@ -288,5 +217,12 @@ public class Course implements Parcelable, Comparable<Course>{
      */
     public void setDrawable(String newDrawable){
         icon = newDrawable;
+    }
+
+    public void SaveToParse(ParseObject object){
+        object.put("createdby", ParseUser.getCurrentUser());
+        object.put("CourseName",this.getCourseFullName());
+        object.put("CourseID",this.getCourseName());
+        object.put("Type",this.getType());
     }
 }

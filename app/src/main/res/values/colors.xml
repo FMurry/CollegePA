@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- For Apptheme Default -->
     <color name="colorPrimary">#F44336</color>
     <color name="colorPrimaryDark">#D32F2F</color>
     <color name="colorAccent">#FF9800</color>
     <color name="colorPrimaryLight">#C45650</color>
     <color name="colorPrimaryText">#fff</color>
+
+    <!-- For Apptheme Blue 2-->
+    <color name="colorPrimary2">#2196F3</color>
+    <color name="colorPrimaryDark2">#1976D2</color>
+    <color name="colorAccent2">#00BCD4</color>
+    <color name="colorPrimaryLight2">#BBDEFB</color>
+    <color name="colorPrimaryText2">#fff</color>
+
 </resources>
