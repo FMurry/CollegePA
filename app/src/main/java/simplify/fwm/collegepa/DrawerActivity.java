@@ -4,16 +4,12 @@ package simplify.fwm.collegepa;
         import android.app.Activity;
         import android.app.ProgressDialog;
         import android.content.Intent;
-        import android.graphics.Color;
         import android.net.Uri;
         import android.os.Build;
         import android.os.Bundle;
-        import android.support.design.widget.FloatingActionButton;
-        import android.support.design.widget.Snackbar;
         import android.support.v4.app.Fragment;
         import android.support.v4.app.FragmentManager;
         import android.util.Log;
-        import android.view.LayoutInflater;
         import android.view.View;
         import android.support.design.widget.NavigationView;
         import android.support.v4.view.GravityCompat;
@@ -25,15 +21,9 @@ package simplify.fwm.collegepa;
         import android.view.MenuItem;
         import android.widget.RelativeLayout;
         import android.widget.TextView;
-        import android.widget.Toast;
-
-        import com.parse.Parse;
-        import com.parse.ParseObject;
         import com.parse.ParseUser;
-
         import butterknife.Bind;
         import butterknife.ButterKnife;
-        import simplify.fwm.collegepa.Course.Course;
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener{
@@ -210,9 +200,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     public void ActionPressed(MenuItem v){
         switch (v.getItemId()){
             case R.id.action_add:
-                Intent add = new Intent(this, addCourseActivity.class);
-                startActivityForResult(add, REQUEST_ADD);
-                recreate();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                addCourseDialog addCourseDialog = new addCourseDialog();
+                addCourseDialog.show(fragmentManager,"fragment_add_course");
                 break;
 
         }

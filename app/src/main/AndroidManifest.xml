@@ -40,10 +40,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".DrawerActivity" />
         </activity>
-        <activity
-            android:name=".addCourseActivity"
-            android:label="@string/title_activity_add_course"
-            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="com.parse.APPLICATION_ID"
@@ -58,12 +54,7 @@
         <activity
             android:name=".SignupActivity"
             android:label="@string/title_activity_signup" />
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login" />
-        <activity
-            android:name=".SignupActivity"
-            android:label="@string/title_activity_signup" />
+
     </application>
 
 </manifest>

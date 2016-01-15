@@ -1,5 +1,6 @@
 package simplify.fwm.collegepa;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -140,13 +141,17 @@ public class CourseFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Fetching Courses....");
+                progressDialog.show();
                 Refresh();
                 new android.os.Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-
+                        progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 1500);
                 swipeRefreshLayout.setRefreshing(false);
             }
         });

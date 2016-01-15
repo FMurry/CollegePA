@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="8dp"
     android:orientation="vertical">
 
 
@@ -19,7 +19,7 @@
         android:layout_marginRight="5dp"
         android:layout_marginTop="0dp"
         card_view:cardBackgroundColor="#fff"
-        card_view:cardCornerRadius="2dp"
+        card_view:cardCornerRadius="10dp"
         card_view:cardElevation="4dp">
 
         <RelativeLayout
