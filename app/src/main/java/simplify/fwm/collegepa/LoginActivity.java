@@ -61,11 +61,8 @@ public class LoginActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
-        try{
+        if(getSupportActionBar()!=null){
             getSupportActionBar().hide();
-        }
-        catch (NullPointerException ex){
-            ex.printStackTrace();
         }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -86,8 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
+                forgotPassword();
             }
         });
     }
@@ -179,6 +175,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(true);
         user = ParseUser.getCurrentUser();
         user.put("deviceName", Build.MODEL);
+        user.put("androidVersion",Build.VERSION.SDK_INT);
         user.saveEventually();
         setResult(Activity.RESULT_OK, null);
         finish();
@@ -266,6 +263,10 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             });
+        }
+        else{
+            Toast.makeText(this,"Please Enter Email",Toast.LENGTH_LONG).show();
+            progressDialog.dismiss();
         }
     }
 

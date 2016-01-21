@@ -2,17 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="simplify.fwm.collegepa">
 
+
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- For google drive -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-
-
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <permission android:protectionLevel="signature"
+        android:name="simplify.fwm.collegepa.permission.C2D_MESSAGE" />
+    <uses-permission android:name="simplify.fwm.collegepa.permission.C2D_MESSAGE" />
 
     <application
         android:name=".DataStructure.ParseApplication"
@@ -21,6 +21,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.parse.APPLICATION_ID"
+            android:value="@string/parse_app_id" />
+        <meta-data
+            android:name="com.parse.CLIENT_KEY"
+            android:value="@string/parse_client_key" />
         <activity
             android:name=".DrawerActivity"
             android:label="@string/app_name"
@@ -32,6 +38,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="com.parse.PushService" />
+        <receiver android:name="com.parse.ParsePushBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.parse.push.intent.RECEIVE" />
+                <action android:name="com.parse.push.intent.DELETE" />
+                <action android:name="com.parse.push.intent.OPEN" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="simplify.fwm.collegepa" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -41,12 +65,10 @@
                 android:value=".DrawerActivity" />
         </activity>
 
+
         <meta-data
-            android:name="com.parse.APPLICATION_ID"
-            android:value="Fjo84GyuefgeHHdRc1Le2cssMz3x9DKJ3xTwhcKf" />
-        <meta-data
-            android:name="com.parse.CLIENT_KEY"
-            android:value="Rq7Dt1KoOX0hWSCSAMos1jQXUNHGu0A1csMoqxR4" />
+            android:name="com.parse.push.notification_icon"
+            android:resource="@drawable/ic_notify" />
 
         <activity
             android:name=".LoginActivity"
@@ -54,7 +76,7 @@
         <activity
             android:name=".SignupActivity"
             android:label="@string/title_activity_signup" />
-
     </application>
+
 
 </manifest>

@@ -118,7 +118,14 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_add) {
+        if (id == R.id.action_add_course) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            addCourseDialog addCourseDialog = new addCourseDialog();
+            addCourseDialog.show(fragmentManager,"fragment_add_course");
+            return true;
+        }
+
+        if (id == R.id.action_add_assignment){
             return true;
         }
 
@@ -159,7 +166,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 }
                 else{
                     toolbar.setTitle("Account");
-                    Log.d(TAG, String.valueOf(Build.VERSION.SDK_INT));
                     fragmentClass=AccountFragment.class;
                 }
                 break;
@@ -197,16 +203,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         return true;
     }
 
-    public void ActionPressed(MenuItem v){
-        switch (v.getItemId()){
-            case R.id.action_add:
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                addCourseDialog addCourseDialog = new addCourseDialog();
-                addCourseDialog.show(fragmentManager,"fragment_add_course");
-                break;
 
-        }
-    }
 
     public void OnClick(View v){
         switch (v.getId()){
