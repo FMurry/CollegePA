@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatSpinner;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,8 +32,15 @@ public class addCourseDialog extends DialogFragment {
     @Bind(R.id.add_course_name)EditText _courseName;
     @Bind(R.id.add_course_id)EditText _courseID;
     @Bind(R.id.add_course_spinner)Spinner _courseTypeSpinner;
-    @Bind(R.id.add_course_add)TextView _addCourse;
-    @Bind(R.id.add_course_cancel)TextView _cancelCourse;
+    @Bind(R.id.add_course_add)AppCompatButton _addCourse;
+    @Bind(R.id.add_course_cancel)AppCompatButton _cancelCourse;
+    @Bind(R.id.add_course_monday)CheckBox _monday;
+    @Bind(R.id.add_course_tuesday)CheckBox _tuesday;
+    @Bind(R.id.add_course_wednesday)CheckBox _wednesday;
+    @Bind(R.id.add_course_thursday)CheckBox _thursday;
+    @Bind(R.id.add_course_friday)CheckBox _friday;
+    @Bind(R.id.add_course_saturday)CheckBox _saturday;
+    @Bind(R.id.add_course_sunday)CheckBox _sunday;
 
 
     public addCourseDialog(){
@@ -42,13 +52,15 @@ public class addCourseDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_course, container);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.course_types,
                 R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         _courseTypeSpinner.setAdapter(adapter);
         getDialog().setTitle("Add a Course");
+
+        _courseID.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
         _addCourse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +106,13 @@ public class addCourseDialog extends DialogFragment {
 
         else{
             Course course = new Course(id,name,type);
+            course.setSunday(_sunday.isChecked());
+            course.setMonday(_monday.isChecked());
+            course.setTuesday(_tuesday.isChecked());
+            course.setWednesday(_wednesday.isChecked());
+            course.setThursday(_thursday.isChecked());
+            course.setFriday(_friday.isChecked());
+            course.setSaturday(_saturday.isChecked());
             ParseObject courseObj = new ParseObject("Course");
             course.SaveToParse(courseObj);
             courseObj.saveEventually();

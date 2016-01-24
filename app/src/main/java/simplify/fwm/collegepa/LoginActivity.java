@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(final ParseUser user, ParseException e) {
                 //Login Succeeded
-                if (user != null) {
+                if (e==null) {
                     Log.d(TAG, "Log in succeeded");
                     new android.os.Handler().postDelayed(new Runnable() {
                         @Override

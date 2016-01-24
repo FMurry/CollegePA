@@ -116,4 +116,6 @@
     <string name="no_account">First Time? Please Sign Up</string>
     <string name="forgot_password">Forgot your password?</string>
     <string name="warning_account">Warning Account will be deleted in 36 hours if email is not verified</string>
+    <string name="title_activity_course">CourseActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

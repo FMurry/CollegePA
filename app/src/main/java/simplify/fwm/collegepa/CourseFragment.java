@@ -200,6 +200,13 @@ public class CourseFragment extends Fragment {
             String newFullName = current.getString("CourseName");
             String newType = current.getString("Type");
             Course course = new Course(newID,newFullName,newType);
+            course.setSunday(current.getBoolean("Sunday"));
+            course.setMonday(current.getBoolean("Monday"));
+            course.setTuesday(current.getBoolean("Tuesday"));
+            course.setWednesday(current.getBoolean("Wednesday"));
+            course.setThursday(current.getBoolean("Thursday"));
+            course.setFriday(current.getBoolean("Friday"));
+            course.setSaturday(current.getBoolean("Saturday"));
             courses.add(course);
         }
 

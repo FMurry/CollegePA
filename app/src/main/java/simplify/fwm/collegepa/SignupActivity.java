@@ -83,7 +83,6 @@ public class SignupActivity extends AppCompatActivity  {
         emailInput = email.getText().toString();
         String passwordInput = password.getText().toString();
 
-        //TODO: Implement Signup logic here
         user.setUsername(emailInput);
         user.setEmail(emailInput);
         user.setPassword(passwordInput);

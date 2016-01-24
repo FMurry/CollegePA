@@ -9,6 +9,7 @@ package simplify.fwm.collegepa;
         import android.os.Bundle;
         import android.support.v4.app.Fragment;
         import android.support.v4.app.FragmentManager;
+        import android.support.v7.widget.RecyclerView;
         import android.util.Log;
         import android.view.View;
         import android.support.design.widget.NavigationView;
@@ -43,6 +44,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private TextView userEmail;
     private boolean loggedIn;
     private MenuItem account_drawer;
+    private int theme = 0;
 
 
     @Override
@@ -52,7 +54,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         ButterKnife.bind(this);
         toolbar.setTitle("Courses");
         setSupportActionBar(toolbar);
-
         currentUser = ParseUser.getCurrentUser();
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -128,6 +129,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         if (id == R.id.action_add_assignment){
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

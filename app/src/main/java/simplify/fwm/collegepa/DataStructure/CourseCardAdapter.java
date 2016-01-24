@@ -1,5 +1,7 @@
 package simplify.fwm.collegepa.DataStructure;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,10 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
+import java.util.Random;
 
 import simplify.fwm.collegepa.Course.Course;
+import simplify.fwm.collegepa.CourseActivity;
 import simplify.fwm.collegepa.R;
 
 /**
@@ -20,6 +25,13 @@ import simplify.fwm.collegepa.R;
 public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.CourseViewHolder> {
 
     private List<Course> courses;
+
+    static final int darkBlue = Color.parseColor("#1976D2");
+    static final int lightBlue = Color.parseColor("#03A9F4");
+    static final int green = Color.parseColor("#4CAF50");
+    static final int red = Color.parseColor("#F44336");
+    static final int darkRed = Color.parseColor("#D32F2F");
+    static final int amber = Color.parseColor("#FFC107");
 
     public CourseCardAdapter(List<Course> list){
         courses = list;
@@ -51,32 +63,14 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
         return new CourseViewHolder(items);
     }
 
-    /**
-     * Called by RecyclerView to display the data at the specified position. This method should
-     * update the contents of the @link ViewHolder#itemView} to reflect the item at the given
-     * position.
-     * <p/>
-     * Note that unlike {@link ListView}, RecyclerView will not call this method
-     * again if the position of the item changes in the data set unless the item itself is
-     * invalidated or the new position cannot be determined. For this reason, you should only
-     * use the <code>position</code> parameter while acquiring the related data item inside
-     * this method and should not keep a copy of it. If you need the position of an item later
-     * on (e.g. in a click listener), use @link ViewHolder#getAdapterPosition()} which will
-     * have the updated adapter position.
-     * <p/>
-     * Override @link #onBindViewHolder(ViewHolder, int, List)} instead if Adapter can
-     * handle effcient partial bind.
-     *
-     * @param holder   The ViewHolder which should be updated to represent the contents of the
-     *                 item at the given position in the data set.
-     * @param position The position of the item within the adapter's data set.
-     */
+
     @Override
     public void onBindViewHolder(CourseViewHolder holder, int position) {
         Course course = courses.get(position);
         holder.courseID.setText(course.getCourseName());
         holder.courseType.setText(course.getStringType());
         holder.courseGrade.setText(course.getGrade());
+        holder.days.setText(course.getStringDays());
     }
 
     /**
@@ -91,7 +85,6 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
 
     public static class CourseViewHolder extends RecyclerView.ViewHolder{
         private CardView cvData;
-        private CardView cvTop;
         private TextView courseID;
         private TextView days;
         private TextView courseType;
@@ -100,12 +93,26 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
 
         CourseViewHolder(View v){
             super(v);
+
             cvData = (CardView)v.findViewById(R.id.card_view);
             courseID = (TextView)v.findViewById(R.id.cv_course_id);
+
+
             days = (TextView)v.findViewById(R.id.cv_course_days);
             courseType = (TextView)v.findViewById(R.id.cv_course_type);
             courseGrade = (TextView)v.findViewById(R.id.cv_grade);
             icon = (ImageView)v.findViewById(R.id.cv_course_icon);
+
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent courseIntent = new Intent(v.getContext(),CourseActivity.class);
+                    v.getContext().startActivity(courseIntent);
+                    //Toast.makeText(v.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                    //TODO: Implement Onclick for Specific Courses
+                }
+            });
+
 
 
         }

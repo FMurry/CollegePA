@@ -23,6 +23,7 @@ public class Course implements Comparable<Course>{
     private String grade;
     private Professor professor;
     private String icon;
+    private boolean[] days;
 
     private ArrayList<Assignment> assignments;
 
@@ -56,6 +57,10 @@ public class Course implements Comparable<Course>{
         }
         professor = new Professor();
         grade = "-1";
+        days = new boolean[7];
+        for(int i = 0;i<days.length;i++){
+            days[i] = false;
+        }
     }
     public Course(String courseName, String courseFullName, String type, Professor professor){
         this.id = id;
@@ -173,6 +178,34 @@ public class Course implements Comparable<Course>{
 
     public void setAssignments(ArrayList assignments){this.assignments = assignments; }
 
+    public void setSunday(boolean toggle){
+        days[0] = toggle;
+    }
+
+    public void setMonday(boolean toggle){
+        days[1] = toggle;
+    }
+
+    public void setTuesday(boolean toggle){
+        days[2] = toggle;
+    }
+
+    public void setWednesday(boolean toggle){
+        days[3] = toggle;
+    }
+
+    public void setThursday(boolean toggle){
+        days[4] = toggle;
+    }
+
+    public void setFriday(boolean toggle){
+        days[5] = toggle;
+    }
+
+    public void setSaturday(boolean toggle){
+        days[6] = toggle;
+    }
+
 
 
 
@@ -208,6 +241,28 @@ public class Course implements Comparable<Course>{
     public String getStringDays(){
         String result = "";
 
+        if(days[0]){
+            result+="S ";
+        }
+        if(days[1]){
+            result+="M ";
+        }
+        if(days[2]){
+            result+="T ";
+        }
+        if(days[3]){
+            result+="W ";
+        }
+        if(days[4]){
+            result+="Th ";
+        }
+        if(days[5]){
+            result+="F ";
+        }
+        if(days[6]){
+            result+=" Sa";
+        }
+
         return result;
     }
 
@@ -224,5 +279,12 @@ public class Course implements Comparable<Course>{
         object.put("CourseName",this.getCourseFullName());
         object.put("CourseID",this.getCourseName());
         object.put("Type",this.getType());
+        object.put("Sunday", days[0]);
+        object.put("Monday",days[1]);
+        object.put("Tuesday",days[2]);
+        object.put("Wednesday",days[3]);
+        object.put("Thursday",days[4]);
+        object.put("Friday",days[5]);
+        object.put("Saturday",days[6]);
     }
 }
