@@ -1,12 +1,15 @@
 package simplify.fwm.collegepa;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,6 +36,7 @@ public class AccountFragment extends Fragment {
     @Bind(R.id.account_welcome)TextView welcome;
     @Bind(R.id.account_email) TextView displayEmail;
     @Bind(R.id.warning_account) TextView warning;
+    @Bind(R.id.account_canvas) ImageView _canvas;
 
 
     // TODO: Rename and change types of parameters
@@ -94,6 +98,12 @@ public class AccountFragment extends Fragment {
             welcome.setText("Are you Logged in?");
         }
 
+        _canvas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                canvasLogin();
+            }
+        });
 
         return v;
     }
@@ -120,6 +130,11 @@ public class AccountFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void canvasLogin(){
+        //TODO: Implement logging into canvas
+        Snackbar.make(this.getView(),"Not implemented",Snackbar.LENGTH_LONG).show();
     }
 }
 

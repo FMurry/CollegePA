@@ -24,6 +24,9 @@
 
     <!-- Strings related to Settings -->
 
+    <!-- Security Settings-->
+    <string name="pref_header_security">Security</string>
+
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 

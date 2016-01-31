@@ -12,6 +12,10 @@
             android:id="@+id/nav_Assignments"
             android:icon="@drawable/ic_note_text_grey600_48dp"
             android:title="Assignments" />
+        <item
+            android:id="@+id/nav_Grades"
+            android:icon="@drawable/ic_school_black_48dp"
+            android:title="Grades"/>
 
     </group>
 

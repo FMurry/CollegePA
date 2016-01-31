@@ -30,6 +30,16 @@
             android:layout_marginRight="15dp"
             android:src="@drawable/ic_account_black_48dp" />
 
+
+
+        <ImageView
+            android:id="@+id/account_canvas"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_canvas"
+            android:layout_alignTop="@+id/account_log_out"
+            android:layout_alignEnd="@+id/warning_account" />
+
         <TextView
             android:id="@+id/account_log_out"
             android:layout_width="wrap_content"

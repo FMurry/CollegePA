@@ -1,6 +1,7 @@
 package simplify.fwm.collegepa;
 
 
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,43 +12,61 @@ import android.support.v7.widget.AppCompatEditText;
 import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
+
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import simplify.fwm.collegepa.utils.Constants;
 
 
 /**
  * A login screen that offers login via email/password.
  */
-public class SignupActivity extends AppCompatActivity  {
+public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = "SignupActivity";
 
     private ParseUser user;
-    @Bind(R.id.signup_firstname)AppCompatEditText firstName;
-    @Bind(R.id.signup_lastname)AppCompatEditText lastName;
-    @Bind(R.id.signup_email)AppCompatEditText email;
-    @Bind(R.id.signup_password)AppCompatEditText password;
-    @Bind(R.id.signup_button)AppCompatButton signupButton;
-    @Bind(R.id.signup_login) TextView loginLink;
+    private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
+    @Bind(R.id.signup_firstname)
+    AppCompatEditText firstName;
+    @Bind(R.id.signup_lastname)
+    AppCompatEditText lastName;
+    @Bind(R.id.signup_email)
+    AppCompatEditText email;
+    @Bind(R.id.signup_password)
+    AppCompatEditText password;
+    @Bind(R.id.signup_button)
+    AppCompatButton signupButton;
+    @Bind(R.id.signup_login)
+    TextView loginLink;
     private String emailInput;
+    private boolean signupSuccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        Firebase ref = new Firebase(Constants.FIREBASE_ROOT_URL);
+
         user = new ParseUser();
         try {
             ButterKnife.bind(this);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        try{
+        try {
             getSupportActionBar().hide();
-        }
-        catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
         signupButton.setOnClickListener(new View.OnClickListener() {
@@ -65,77 +84,113 @@ public class SignupActivity extends AppCompatActivity  {
         });
     }
 
-    public void signUp(){
+    public void signUp() {
 
-        if(!validate()){
+        if (!validate()) {
             onSignupFailed();
             return;
         }
         signupButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Signing Up");
-        progressDialog.show();
 
-        String firstNameInput = firstName.getText().toString();
-        String lastNameInput = lastName.getText().toString();
+
+        final String firstNameInput = firstName.getText().toString();
+        final String lastNameInput = lastName.getText().toString();
         emailInput = email.getText().toString();
-        String passwordInput = password.getText().toString();
+        final String passwordInput = password.getText().toString();
 
         user.setUsername(emailInput);
         user.setEmail(emailInput);
         user.setPassword(passwordInput);
         user.put("firstName", firstNameInput);
         user.put("lastName", lastNameInput);
-        ParseUser.logOut();
-        user.signUpInBackground(new SignUpCallback() {
+
+
+        //Firebase Signup
+        root.createUser(emailInput, passwordInput, new Firebase.ResultHandler() {
             @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    new android.os.Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+            public void onSuccess() {
+                onSignupSuccess();
+
+                root.authWithPassword(emailInput, passwordInput, new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+                        Map<String, String> map = new HashMap<>();
+                        map.put("provider", authData.getProvider());
+                        map.put("email", emailInput);
+                        map.put("firstName",firstNameInput);
+                        map.put("lastName",lastNameInput);
+                        map.put("device", Build.MODEL);
+                        map.put("OSversion", String.valueOf(Build.VERSION.SDK_INT));
+                        root.child("users").child(authData.getUid()).setValue(map);
+
+                    }
+
+                    @Override
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+                        Log.d(TAG, firebaseError.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(final FirebaseError firebaseError) {
+                final FirebaseError error = firebaseError;
+
+                onSignupFailed();
+                if (error.getCode() == FirebaseError.EMAIL_TAKEN) {
+                    email.setError(error.getMessage());
+                    Toast.makeText(getBaseContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getBaseContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.d(TAG, firebaseError.getMessage());
+                }
+
+
+            }
+        });
+
+                /*
+                //Parse Signup
+                user.signUpInBackground(new SignUpCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+
                             onSignupSuccess();
                             progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(),"Sign Up Successful",Toast.LENGTH_LONG).show();
-                        }
-                    }, 2000);
-                }
-                else {
-                    e.printStackTrace();
-                    new android.os.Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+                            Toast.makeText(getBaseContext(), "Sign Up Successful", Toast.LENGTH_LONG).show();
+
+                        } else {
+                            e.printStackTrace();
+
                             ParseUser.logOut();
                             onSignupFailed();
                             progressDialog.dismiss();
                             email.setError("Email already has account");
-                        }
-                    }, 2000);
-                }
-            }
-        });
 
-        //TODO:-----------------------------
+                        }
+                    }
+                });
+                */
 
 
     }
 
-    public void onSignupSuccess(){
+    public void onSignupSuccess() {
         signupButton.setEnabled(true);
-        ParseUser.logOut();
         setResult(RESULT_OK, null);
+        root.unauth();
         finish();
     }
 
-    public void onSignupFailed(){
-        Log.d(TAG,"Sign Up Failed");
+    public void onSignupFailed() {
+        Log.d(TAG, "Sign Up Failed");
         signupButton.setEnabled(true);
 
     }
 
-    public boolean validate(){
+    public boolean validate() {
         boolean valid = true;
 
         String firstNameInput = firstName.getText().toString();
@@ -143,35 +198,31 @@ public class SignupActivity extends AppCompatActivity  {
         String emailInput = email.getText().toString();
         String passwordInput = password.getText().toString();
 
-        if(firstNameInput.isEmpty() || firstNameInput.length()<3){
+        if (firstNameInput.isEmpty() || firstNameInput.length() < 3) {
             firstName.setError("Enter at least 3 characters");
             valid = false;
-        }
-        else{
+        } else {
             firstName.setError(null);
         }
 
-        if(lastNameInput.isEmpty() || lastNameInput.length()<1){
+        if (lastNameInput.isEmpty() || lastNameInput.length() < 1) {
             lastName.setError("Enter at least 1 character");
             valid = false;
-        }
-        else{
+        } else {
             lastName.setError(null);
         }
 
-        if(emailInput.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()){
+        if (emailInput.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
             email.setError("Enter valid email");
             valid = false;
-        }
-        else {
+        } else {
             email.setError(null);
         }
 
-        if(passwordInput.isEmpty() || password.length() < 6 || password.length()> 12){
+        if (passwordInput.isEmpty() || password.length() < 6 || password.length() > 12) {
             password.setError("Between 6 and 12 alphanumeric characters");
             valid = false;
-        }
-        else{
+        } else {
             password.setError(null);
         }
         return valid;

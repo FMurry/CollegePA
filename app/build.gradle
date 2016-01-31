@@ -1,6 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
@@ -25,6 +32,7 @@ android {
 
 
 
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -37,4 +45,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.firebase:firebase-client-android:2.5.0+'
 }

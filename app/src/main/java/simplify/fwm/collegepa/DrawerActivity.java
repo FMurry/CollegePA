@@ -3,12 +3,19 @@ package simplify.fwm.collegepa;
 
         import android.app.Activity;
         import android.app.ProgressDialog;
+        import android.content.Context;
         import android.content.Intent;
+        import android.graphics.Color;
+        import android.hardware.fingerprint.FingerprintManager;
+        import android.net.ConnectivityManager;
+        import android.net.NetworkInfo;
         import android.net.Uri;
         import android.os.Build;
         import android.os.Bundle;
+        import android.support.design.widget.Snackbar;
         import android.support.v4.app.Fragment;
         import android.support.v4.app.FragmentManager;
+        import android.support.v4.hardware.fingerprint.FingerprintManagerCompatApi23;
         import android.support.v7.widget.RecyclerView;
         import android.util.Log;
         import android.view.View;
@@ -20,31 +27,42 @@ package simplify.fwm.collegepa;
         import android.support.v7.widget.Toolbar;
         import android.view.Menu;
         import android.view.MenuItem;
+        import android.widget.FrameLayout;
+        import android.widget.LinearLayout;
         import android.widget.RelativeLayout;
         import android.widget.TextView;
+
+        import com.firebase.client.Firebase;
         import com.parse.ParseUser;
         import butterknife.Bind;
         import butterknife.ButterKnife;
+        import simplify.fwm.collegepa.utils.Constants;
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener{
 
+
+    //TODO: FACEBOOK FUCKED PARSE NEED A NEW BACKEND FOR DATA
+
     private static final int REQUEST_LOGIN = 1;
     private static final int REQUEST_ADD = 2;
+    private static final int REQUEST_FINGERPRINT = 3;
     private static final String TAG="DrawerActivity";
+    private final Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
 
     @Bind(R.id.drawer_layout) DrawerLayout drawer;
     @Bind(R.id.nav_view) NavigationView navigationView;
     @Bind(R.id.toolbar)Toolbar toolbar;
     @Bind(R.id.main_layout) RelativeLayout mainLayout;
-
+    @Bind(R.id.flcontent)FrameLayout _frameLayout;
     private ActionBarDrawerToggle toggle;
-    private ParseUser currentUser;
     private TextView userName;
     private TextView userEmail;
     private boolean loggedIn;
     private MenuItem account_drawer;
+    private Snackbar snackbarConnection;
     private int theme = 0;
+    private int verified = 0;
 
 
     @Override
@@ -54,8 +72,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         ButterKnife.bind(this);
         toolbar.setTitle("Courses");
         setSupportActionBar(toolbar);
-        currentUser = ParseUser.getCurrentUser();
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        snackbarConnection = Snackbar.make(_frameLayout,"No Connection",Snackbar.LENGTH_INDEFINITE).setAction("Retry", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Loading();
+            }
+        });
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
@@ -72,16 +95,16 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         userEmail = (TextView)headerLayout.findViewById(R.id.user_email);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem)navMenu.findItem(R.id.nav_Account);
-        if(currentUser==null){
+        if(root.getAuth()==null){
             account_drawer.setTitle("Log In");
         }
-        if(currentUser!=null) {
-            userName.setText("Welcome " + currentUser.get("firstName") + "!");
-            userEmail.setText(currentUser.getEmail());
+        if(root.getAuth() != null) {
 
-            //What device is the user using?
-            currentUser.put("deviceName",Build.MODEL);
-            currentUser.saveEventually();
+            //TODO: Get name and email of user
+            /*
+            userName.setText("Welcome " + currentUser.get("firstName") + "!");
+            userEmail.setText(currentUser.getEmail());*/
+
 
             Loading();
         }
@@ -89,6 +112,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             Intent loginActivity = new Intent(this, simplify.fwm.collegepa.LoginActivity.class);
             startActivityForResult(loginActivity, REQUEST_LOGIN);
 
+        }
+        if(!isConnected()){
+            showConnectionSnack();
         }
 
     }
@@ -120,6 +146,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add_course) {
+            //TODO: Change into FAB With roll animation for course and assignment-k
             FragmentManager fragmentManager = getSupportFragmentManager();
             addCourseDialog addCourseDialog = new addCourseDialog();
             addCourseDialog.show(fragmentManager,"fragment_add_course");
@@ -151,6 +178,20 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 toolbar.setTitle("Assignments");
                 fragmentClass= AssignmentFragment.class;
                 break;
+            case R.id.nav_Grades:
+                if(Build.VERSION.SDK_INT >= 23 && FingerprintManagerCompatApi23.isHardwareDetected(this)
+                        && FingerprintManagerCompatApi23.hasEnrolledFingerprints(this)){
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FingerPrintDialog fingerPrintDialog = new FingerPrintDialog();
+                    fingerPrintDialog.show(fragmentManager,"FingerPrintDialog");
+                    toolbar.setTitle("Grades");
+                    fragmentClass = GradesFragment.class;
+                }
+                else {
+                    toolbar.setTitle("Grades");
+                    fragmentClass = GradesFragment.class;
+                }
+                break;
             case R.id.nav_About:
                 toolbar.setTitle("About");
                 fragmentClass = AboutFragment.class;
@@ -162,7 +203,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.nav_Account:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
-                if(currentUser == null){
+                if(root.getAuth() == null){
                     startActivityForResult(loginActivity, REQUEST_LOGIN);
                     frag=false;
                 }
@@ -182,7 +223,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 startActivity(Intent.createChooser(emailClient,"Send Email using"));
                 break;
             case R.id.nav_Log_out:
+                root.unauth();
                 ParseUser.logOut();
+
                 recreate();
                 break;
             default:
@@ -211,7 +254,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         switch (v.getId()){
             case R.id.account_log_out:
                 ParseUser.logOut();
-                currentUser = ParseUser.getCurrentUser();
+                root.unauth();
                 startActivity(new Intent(this, LoginActivity.class));
                 break;
         }
@@ -232,7 +275,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1){
             if(resultCode == Activity.RESULT_OK){
                 Intent refresh = new Intent(this, DrawerActivity.class);
@@ -266,12 +309,46 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Fetching Courses");
         progressDialog.show();
-
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 progressDialog.dismiss();
             }
-        },1000);
+        }, 1000);
+        if(isConnected()){
+            if(snackbarConnection.isShown()){
+                Log.d(TAG,"Dismissing Snackbar");
+                snackbarConnection.dismiss();
+            }
+        }
+        else {
+            showConnectionSnack();
+        }
     }
+
+    public boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean connected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        return connected;
+    }
+
+    public void showConnectionSnack(){
+        Log.d(TAG,"Showing snackbar");
+        snackbarConnection.setActionTextColor(Color.RED);
+        View snackbarView = snackbarConnection.getView();
+        TextView sText = (TextView)snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        sText.setTextColor(Color.YELLOW);
+        snackbarConnection.show();
+    }
+
+    public void StartGrade(){
+        if(verified==1){
+            Fragment fragment = (Fragment) GradesFragment.newInstance();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.flcontent,fragment).commit();
+        }
+    }
+
+
 }

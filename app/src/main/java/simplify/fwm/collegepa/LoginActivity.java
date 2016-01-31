@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
@@ -16,9 +18,13 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -26,8 +32,12 @@ import com.parse.ParseSession;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import simplify.fwm.collegepa.utils.Constants;
 
 
 /**
@@ -37,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
 
 
     @Bind(R.id.login_email) AppCompatEditText email;
@@ -45,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.login_signup) TextView signUp;
     @Bind(R.id.login_post_email) TextView emailVerifyPrompt;
     @Bind(R.id.login_forgot_password)TextView forgotPassword;
+    @Bind(R.id.login_linearlayout)LinearLayout _linearlayout;
 
     private String postSignEmail;
     private ParseUser user;
@@ -97,7 +109,18 @@ public class LoginActivity extends AppCompatActivity {
 
         if(!isConnected()){
            onLoginFailed();
-            Toast.makeText(this,"No connection",Toast.LENGTH_LONG).show();
+            Snackbar snackbar = Snackbar.make(_linearlayout,"No connection",Snackbar.LENGTH_INDEFINITE).setAction("Retry",
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            login();
+                        }
+                    });
+            snackbar.setActionTextColor(Color.RED);
+            View snackView = snackbar.getView();
+            TextView text = (TextView)snackView.findViewById(android.support.design.R.id.snackbar_text);
+            text.setTextColor(Color.YELLOW);
+            snackbar.show();
             return;
         }
         if(ParseUser.getCurrentUser()!=null){
@@ -106,41 +129,86 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(true);
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Please wait......");
         progressDialog.show();
 
-        String emailCurrent = email.getText().toString();
-        String passwordCurrent = password.getText().toString();
-        ParseUser.logInInBackground(emailCurrent, passwordCurrent, new LogInCallback() {
+        final String emailCurrent = email.getText().toString();
+        final String passwordCurrent = password.getText().toString();
+        new android.os.Handler().postDelayed(new Runnable() {
             @Override
-            public void done(final ParseUser user, ParseException e) {
-                //Login Succeeded
-                if (e==null) {
-                    Log.d(TAG, "Log in succeeded");
-                    new android.os.Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressDialog.dismiss();
-                            onLoginSuccess();
+            public void run() {
 
+                //FIREBASE LOGIN
+                root.authWithPassword(emailCurrent, passwordCurrent, new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+                        Log.d(TAG, "Log in succeeded");
+                        Map<String, String> map = new HashMap<String, String>();
+                        map.put("provider",authData.getProvider());
+                        map.put("device",Build.MODEL);
+                        map.put("OSversion",String.valueOf(Build.VERSION.SDK_INT));
+                        root.child("users").child(authData.getUid()).setValue(map);
+
+                        progressDialog.dismiss();
+                        onLoginSuccess();
+                    }
+
+                    @Override
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+                        if(firebaseError.getCode() == FirebaseError.DISCONNECTED){
+                            progressDialog.dismiss();
+                            Toast.makeText(getBaseContext(), "No Connection", Toast.LENGTH_SHORT).show();
                         }
-                    }, 3000);
-                }
-                //Login Failed
-                else {
-                    new android.os.Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+                        else{
                             onLoginFailed();
                             progressDialog.dismiss();
                             Toast.makeText(getBaseContext(), "Login Failed", Toast.LENGTH_LONG).show();
                         }
-                    }, 2000);
+                    }
+                });
+                /*
+                //PARSE LOGIN
+                ParseUser.logInInBackground(emailCurrent, passwordCurrent, new LogInCallback() {
+                    @Override
+                    public void done(final ParseUser user, ParseException e) {
+                        //Login Succeeded
+                        if (e == null) {
+                            Log.d(TAG, "Log in succeeded");
 
-                }
+                                    progressDialog.dismiss();
+                                    onLoginSuccess();
+
+                        }
+                        //Login Failed
+                        else if(e.getCode() == ParseException.CONNECTION_FAILED || e.getCode() == ParseException.REQUEST_LIMIT_EXCEEDED
+                                || e.getCode() == ParseException.TIMEOUT){
+                            //TODO : This Needs to be entered when no connection is available
+                            progressDialog.dismiss();
+                            Snackbar snackbar = Snackbar.make(_linearlayout,"No connection",Snackbar.LENGTH_INDEFINITE).setAction("Retry",
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            login();
+                                        }
+                                    });
+                            snackbar.setActionTextColor(Color.RED);
+                            View snackView = snackbar.getView();
+                            TextView text = (TextView)snackView.findViewById(android.support.design.R.id.snackbar_text);
+                            text.setTextColor(Color.YELLOW);
+                            snackbar.show();
+                            onLoginFailed();
+                        }
+                        else {
+                                    onLoginFailed();
+                                    progressDialog.dismiss();
+                                    Toast.makeText(getBaseContext(), "Login Failed", Toast.LENGTH_LONG).show();
+
+                        }
+                    }
+                });*/
             }
-        });
+        }, 3000);
+
 
     }
 
@@ -173,10 +241,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess(){
         loginButton.setEnabled(true);
-        user = ParseUser.getCurrentUser();
-        user.put("deviceName", Build.MODEL);
-        user.put("androidVersion",Build.VERSION.SDK_INT);
-        user.saveEventually();
         setResult(Activity.RESULT_OK, null);
         finish();
     }
