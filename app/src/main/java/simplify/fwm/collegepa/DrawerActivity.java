@@ -32,7 +32,10 @@ package simplify.fwm.collegepa;
         import android.widget.RelativeLayout;
         import android.widget.TextView;
 
+        import com.firebase.client.DataSnapshot;
         import com.firebase.client.Firebase;
+        import com.firebase.client.FirebaseError;
+        import com.firebase.client.ValueEventListener;
         import com.parse.ParseUser;
         import butterknife.Bind;
         import butterknife.ButterKnife;
@@ -101,9 +104,19 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         if(root.getAuth() != null) {
 
             //TODO: Get name and email of user
-            /*
-            userName.setText("Welcome " + currentUser.get("firstName") + "!");
-            userEmail.setText(currentUser.getEmail());*/
+            root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    userName.setText("Welcome " + dataSnapshot.child("firstName").getValue(String.class));
+                    userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
+
 
 
             Loading();
@@ -172,7 +185,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 //Handle the Course action
                 toolbar.setTitle("Courses");
                 fragmentClass = CourseFragment.class;
-                Loading();
                 break;
             case R.id.nav_Assignments:
                 toolbar.setTitle("Assignments");
@@ -224,8 +236,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.nav_Log_out:
                 root.unauth();
-                ParseUser.logOut();
-
                 recreate();
                 break;
             default:

@@ -143,11 +143,12 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticated(AuthData authData) {
                         Log.d(TAG, "Log in succeeded");
-                        Map<String, String> map = new HashMap<String, String>();
-                        map.put("provider",authData.getProvider());
-                        map.put("device",Build.MODEL);
-                        map.put("OSversion",String.valueOf(Build.VERSION.SDK_INT));
-                        root.child("users").child(authData.getUid()).setValue(map);
+
+
+                        root.child("users").child(authData.getUid()).child("provider").setValue(authData.getProvider());
+                        root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
+                        root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
+
 
                         progressDialog.dismiss();
                         onLoginSuccess();

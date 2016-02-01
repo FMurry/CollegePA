@@ -22,6 +22,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -37,6 +44,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import simplify.fwm.collegepa.Course.Course;
 import simplify.fwm.collegepa.DataStructure.CourseCardAdapter;
+import simplify.fwm.collegepa.utils.Constants;
 
 
 public class CourseFragment extends Fragment {
@@ -52,6 +60,9 @@ public class CourseFragment extends Fragment {
     private ParseQuery<ParseObject> courseQuery;
     private ParseQuery<ParseObject> offlineCourseQuery;
     private int size;
+    private AuthData user;
+    private Firebase root;
+    private Firebase userCourseBranch;
 
 
     private static final String TAG = "CourseFragment";
@@ -86,7 +97,26 @@ public class CourseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_course, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
+
+        root = new Firebase(Constants.FIREBASE_ROOT_URL);
+        user = root.getAuth();
+        if(user!=null) {
+            userCourseBranch = root.child("users").child(user.getUid()).child("Courses");
+            Query query = userCourseBranch.orderByKey();
+            userCourseBranch.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    size = (int)dataSnapshot.getChildrenCount();
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
+        }
+
 
 
         recycler.setHasFixedSize(true);
@@ -115,27 +145,10 @@ public class CourseFragment extends Fragment {
         //If there is network available find all data from cloud
         if(isConnected()) {
             Log.d(TAG,"Retrieving from Cloud");
-            courseQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> courseList, ParseException e) {
-                    Log.d(TAG,"Entered Done for Online");
-                    if (e == null) {
-                        Log.d(TAG, "Retrieved " + courseList.size()+" from Cloud");
-                        courses = new ArrayList<Course>();
-                        ParseCourses(courseList);
-                        rvAdapter = new CourseCardAdapter(courses);
-                        Log.d(TAG, "course size: " + courses.size());
-                        recycler.setAdapter(rvAdapter);
-                        Log.d(TAG, "Adapter Set");
-                        if (size != 0) {
-                            ncIcon.setVisibility(View.GONE);
-                            noCourses.setVisibility(View.GONE);
-                        }
-                    } else {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            courses = new ArrayList<>();
+            //ParseCourses(courseList);
+            getFirebaseCourses(userCourseBranch);
+
         }
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -202,6 +215,46 @@ public class CourseFragment extends Fragment {
 
     }
 
+    public void getFirebaseCourses(Firebase courseBranch){
+        if(root.getAuth()!=null) {
+            courseBranch.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    saveCourse(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Log.d(TAG, firebaseError.getMessage());
+                }
+            });
+        }
+    }
+
+    public void saveCourse(DataSnapshot snapshot){
+        for(DataSnapshot child : snapshot.getChildren()){
+            String courseName = (String)child.child("CourseName").getValue(String.class);
+            String courseID = (String)child.child("CourseID").getValue(String.class);
+            String type = (String)child.child("Type").getValue(String.class);
+            Course course = new Course(courseID,courseName,type);
+            course.setRoom((String)child.child("Room").getValue(String.class));
+            course.setSunday((boolean)child.child("Sunday").getValue(boolean.class));
+            course.setMonday((boolean) child.child("Monday").getValue(boolean.class));
+            course.setTuesday((boolean) child.child("Tuesday").getValue(boolean.class));
+            course.setWednesday((boolean) child.child("Wednesday").getValue(boolean.class));
+            course.setThursday((boolean) child.child("Thursday").getValue(boolean.class));
+            course.setFriday((boolean) child.child("Friday").getValue(boolean.class));
+            course.setSaturday((boolean) child.child("Saturday").getValue(boolean.class));
+            courses.add(course);
+
+
+        }
+        rvAdapter = new CourseCardAdapter(courses);
+        Log.d(TAG, "course size: " + courses.size());
+        recycler.setAdapter(rvAdapter);
+        Log.d(TAG, "Adapter Set");
+    }
+
     /**
      * Update all items on fragment
      */
@@ -211,6 +264,8 @@ public class CourseFragment extends Fragment {
         fragmentTransaction.detach(fragment);
         fragmentTransaction.attach(fragment);
         fragmentTransaction.commit();
+        //getFirebaseCourses(userCourseBranch);
+
         recycler.setAdapter(null);
 
     }

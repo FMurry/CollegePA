@@ -26,15 +26,32 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/cv_course_id"
+                android:id="@+id/cv_course_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:background="@color/colorPrimaryDark"
                 android:gravity="center_horizontal"
-                android:text="Course ID"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Course Name"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/colorPrimaryText" />
+
+            <TextView
+                android:id="@+id/cv_course_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/cv_course_name"
+                android:text="Course ID"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/cv_course_room"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/cv_course_id"
+                android:text="Room"
+                android:layout_marginTop="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <TextView
                 android:id="@+id/cv_course_days"
@@ -49,9 +66,8 @@
                 android:id="@+id/cv_grade"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/cv_course_name"
                 android:text="80"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorPrimaryText" />
@@ -67,7 +83,8 @@
                 android:id="@+id/cv_course_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/cv_course_id"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
                 android:background="#fff"
                 android:src="@drawable/ic_code_array_black_48dp" />
 

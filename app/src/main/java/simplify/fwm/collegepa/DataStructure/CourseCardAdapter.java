@@ -67,10 +67,12 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
     @Override
     public void onBindViewHolder(CourseViewHolder holder, int position) {
         Course course = courses.get(position);
+        holder.courseName.setText(course.getCourseFullName());
         holder.courseID.setText(course.getCourseName());
         holder.courseType.setText(course.getStringType());
         holder.courseGrade.setText(course.getGrade());
         holder.days.setText(course.getStringDays());
+        holder.courseRoom.setText(course.getRoom());
     }
 
     /**
@@ -86,9 +88,11 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
     public static class CourseViewHolder extends RecyclerView.ViewHolder{
         private CardView cvData;
         private TextView courseID;
+        private TextView courseName;
         private TextView days;
         private TextView courseType;
         private TextView courseGrade;
+        private TextView courseRoom;
         private ImageView icon;
 
         CourseViewHolder(View v){
@@ -96,19 +100,23 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
 
             cvData = (CardView)v.findViewById(R.id.card_view);
             courseID = (TextView)v.findViewById(R.id.cv_course_id);
-
+            courseName = (TextView)v.findViewById(R.id.cv_course_name);
+            courseRoom = (TextView)v.findViewById(R.id.cv_course_room);
 
             days = (TextView)v.findViewById(R.id.cv_course_days);
             courseType = (TextView)v.findViewById(R.id.cv_course_type);
             courseGrade = (TextView)v.findViewById(R.id.cv_grade);
             icon = (ImageView)v.findViewById(R.id.cv_course_icon);
 
+            int[] androidColors = v.getContext().getResources().getIntArray(R.array.androidcolors);
+            int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
+            courseName.setBackgroundColor(randomAndroidColor);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent courseIntent = new Intent(v.getContext(),CourseActivity.class);
                     v.getContext().startActivity(courseIntent);
-                    //Toast.makeText(v.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
                     //TODO: Implement Onclick for Specific Courses
                 }
             });
@@ -119,4 +127,6 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
 
 
     }
+
+
 }

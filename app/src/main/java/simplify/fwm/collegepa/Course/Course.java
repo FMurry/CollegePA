@@ -3,13 +3,17 @@ package simplify.fwm.collegepa.Course;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import com.firebase.client.Firebase;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -22,6 +26,7 @@ public class Course implements Comparable<Course>{
     private String type;
     private String grade;
     private Professor professor;
+    private String room;
     private String icon;
     private boolean[] days;
 
@@ -55,6 +60,7 @@ public class Course implements Comparable<Course>{
             this.type = "0";
 
         }
+        room = "";
         professor = new Professor();
         grade = "-1";
         days = new boolean[7];
@@ -73,6 +79,7 @@ public class Course implements Comparable<Course>{
         else{
             this.type = "0";
         }
+        room = "";
         grade = "-1";
         this.professor = professor;
         assignments = new ArrayList<>();
@@ -159,6 +166,10 @@ public class Course implements Comparable<Course>{
         }
 
     }
+
+    public String getRoom(){
+        return  room;
+    }
     /*         Mutators              */
     public void setCourseName(String courseName){
         this.courseName = courseName;
@@ -177,6 +188,8 @@ public class Course implements Comparable<Course>{
     public void setProfessor(Professor professor){this.professor = professor;}
 
     public void setAssignments(ArrayList assignments){this.assignments = assignments; }
+
+    public void setRoom(String room){this.room = room;}
 
     public void setSunday(boolean toggle){
         days[0] = toggle;
@@ -286,5 +299,29 @@ public class Course implements Comparable<Course>{
         object.put("Thursday",days[4]);
         object.put("Friday",days[5]);
         object.put("Saturday",days[6]);
+    }
+
+    public void saveToFirebase(Firebase branch){
+
+        Map<String,String> infoMap = new HashMap<>();
+        infoMap.put("CourseName",this.getCourseFullName());
+        infoMap.put("CourseID",this.getCourseName());
+        infoMap.put("Type", this.getType());
+        infoMap.put("Room",this.getRoom());
+        branch.setValue(infoMap);
+        branch.child("Sunday").setValue(days[0]);
+        branch.child("Monday").setValue(days[1]);
+        branch.child("Tuesday").setValue(days[2]);
+        branch.child("Wednesday").setValue(days[3]);
+        branch.child("Thursday").setValue(days[4]);
+        branch.child("Friday").setValue(days[5]);
+        branch.child("Saturday").setValue(days[6]);
+
+
+
+
+
+
+
     }
 }
