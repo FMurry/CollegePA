@@ -8,7 +8,8 @@ Sign Up Page:
 Login Page:
 <br>
 ![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/login.png)
-
+<br>
+Course Main Page:
 <br>
 ![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/Course.png)
 
