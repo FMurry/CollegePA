@@ -115,6 +115,10 @@ public class addCourseDialog extends DialogFragment {
             Toast.makeText(getContext(),"Please Enter Course ID",Toast.LENGTH_SHORT).show();
         }
 
+        else if(_courseRoom.getText().toString().isEmpty()){
+            Toast.makeText(getContext(), "Please Enter Room Number", Toast.LENGTH_SHORT).show();
+        }
+
         else{
             Course course = new Course(id,name,type);
             course.setRoom(_courseRoom.getText().toString());
