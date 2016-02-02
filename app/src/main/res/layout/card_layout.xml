@@ -68,9 +68,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_below="@id/cv_course_name"
-                android:text="80"
+                android:text="-"
+                android:layout_marginRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/colorPrimaryText" />
+                />
 
             <TextView
                 android:id="@+id/cv_course_type"
