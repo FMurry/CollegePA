@@ -167,46 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
-                /*
-                //PARSE LOGIN
-                ParseUser.logInInBackground(emailCurrent, passwordCurrent, new LogInCallback() {
-                    @Override
-                    public void done(final ParseUser user, ParseException e) {
-                        //Login Succeeded
-                        if (e == null) {
-                            Log.d(TAG, "Log in succeeded");
 
-                                    progressDialog.dismiss();
-                                    onLoginSuccess();
-
-                        }
-                        //Login Failed
-                        else if(e.getCode() == ParseException.CONNECTION_FAILED || e.getCode() == ParseException.REQUEST_LIMIT_EXCEEDED
-                                || e.getCode() == ParseException.TIMEOUT){
-                            //TODO : This Needs to be entered when no connection is available
-                            progressDialog.dismiss();
-                            Snackbar snackbar = Snackbar.make(_linearlayout,"No connection",Snackbar.LENGTH_INDEFINITE).setAction("Retry",
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            login();
-                                        }
-                                    });
-                            snackbar.setActionTextColor(Color.RED);
-                            View snackView = snackbar.getView();
-                            TextView text = (TextView)snackView.findViewById(android.support.design.R.id.snackbar_text);
-                            text.setTextColor(Color.YELLOW);
-                            snackbar.show();
-                            onLoginFailed();
-                        }
-                        else {
-                                    onLoginFailed();
-                                    progressDialog.dismiss();
-                                    Toast.makeText(getBaseContext(), "Login Failed", Toast.LENGTH_LONG).show();
-
-                        }
-                    }
-                });*/
             }
         }, 3000);
 
@@ -297,37 +258,27 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Please wait......");
         progressDialog.show();
 
-        String currentEmail = email.getText().toString();
+        final String currentEmail = email.getText().toString();
         if(validateForgot()){
-            ParseUser.requestPasswordResetInBackground(currentEmail, new RequestPasswordResetCallback() {
+            new android.os.Handler().postDelayed(new Runnable() {
                 @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Toast.makeText(getBaseContext(), "Check Email to Reset", Toast.LENGTH_LONG).show();
-                        new android.os.Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressDialog.dismiss();
-
-                            }
-                        }, 2000);
-                        if (ParseUser.getCurrentUser() != null) {
-                            ParseUser.logOut();
+                public void run() {
+                    root.resetPassword(currentEmail, new Firebase.ResultHandler() {
+                        @Override
+                        public void onSuccess() {
+                            progressDialog.dismiss();
+                            Toast.makeText(getBaseContext(), "Check Email for Password Reset", Toast.LENGTH_SHORT).show();
                         }
 
-                    } else {
-                        Toast.makeText(getBaseContext(), "Email Not found, Please sign up", Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                        new android.os.Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressDialog.dismiss();
-
-                            }
-                        }, 2000);
-                    }
+                        @Override
+                        public void onError(FirebaseError firebaseError) {
+                            progressDialog.dismiss();
+                            Toast.makeText(getBaseContext(), "Email not found", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            });
+            }, 2500);
+
         }
         else{
             Toast.makeText(this,"Please Enter Email",Toast.LENGTH_LONG).show();
