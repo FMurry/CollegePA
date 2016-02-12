@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
-import com.parse.ParseObject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -29,13 +29,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
-import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-
-import com.parse.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +50,6 @@ public class CourseFragment extends Fragment {
     private List<Course> courses;
     private RecyclerView.LayoutManager rvLayout;
     private RecyclerView.Adapter rvAdapter;
-    private ParseQuery<ParseObject> courseQuery;
-    private ParseQuery<ParseObject> offlineCourseQuery;
     private int size;
     private AuthData user;
     private Firebase root;
@@ -123,25 +114,7 @@ public class CourseFragment extends Fragment {
 
         rvLayout = new LinearLayoutManager(v.getContext());
         recycler.setLayoutManager(rvLayout);
-        courseQuery = ParseQuery.getQuery("Course");
-        courseQuery.whereEqualTo("createdby", ParseUser.getCurrentUser());
-        courseQuery.orderByAscending("CourseID");
 
-        offlineCourseQuery = ParseQuery.getQuery("Course");
-        offlineCourseQuery.fromLocalDatastore();
-        offlineCourseQuery.whereEqualTo("createdby", ParseUser.getCurrentUser());
-
-        //If User is back online save the courses that are not in cloud
-        if(offlineCourseQuery!=null && isConnected()){
-            offlineCourseQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> objects, ParseException e) {
-                    for (ParseObject o : objects) {
-                        o.saveEventually();
-                    }
-                }
-            });
-        }
         //If there is network available find all data from cloud
         if(isConnected()) {
             Log.d(TAG,"Retrieving from Cloud");
@@ -190,30 +163,7 @@ public class CourseFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * Pulls Objects from parse when connection is available
-     * @param objects
-     */
-    public void ParseCourses(List<ParseObject> objects){
 
-        size = objects.size();
-        for(int i = 0; i<size;i++){
-            ParseObject current = objects.get(i);
-            String newID = current.getString("CourseID");
-            String newFullName = current.getString("CourseName");
-            String newType = current.getString("Type");
-            Course course = new Course(newID,newFullName,newType);
-            course.setSunday(current.getBoolean("Sunday"));
-            course.setMonday(current.getBoolean("Monday"));
-            course.setTuesday(current.getBoolean("Tuesday"));
-            course.setWednesday(current.getBoolean("Wednesday"));
-            course.setThursday(current.getBoolean("Thursday"));
-            course.setFriday(current.getBoolean("Friday"));
-            course.setSaturday(current.getBoolean("Saturday"));
-            courses.add(course);
-        }
-
-    }
 
     public void getFirebaseCourses(Firebase courseBranch){
         if(root.getAuth()!=null) {

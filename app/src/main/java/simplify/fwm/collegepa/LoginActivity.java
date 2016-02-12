@@ -25,12 +25,7 @@ import android.widget.Toast;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.parse.LogInCallback;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseSession;
-import com.parse.ParseUser;
-import com.parse.RequestPasswordResetCallback;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.login_linearlayout)LinearLayout _linearlayout;
 
     private String postSignEmail;
-    private ParseUser user;
 
 
     @Override
@@ -123,9 +117,7 @@ public class LoginActivity extends AppCompatActivity {
             snackbar.show();
             return;
         }
-        if(ParseUser.getCurrentUser()!=null){
-            ParseUser.logOut();
-        }
+
         loginButton.setEnabled(true);
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -148,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
                         root.child("users").child(authData.getUid()).child("provider").setValue(authData.getProvider());
                         root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
                         root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
-
 
                         progressDialog.dismiss();
                         onLoginSuccess();
@@ -225,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
             email.setError(null);
         }
 
-        if(currentPassword.isEmpty() || currentPassword.length() < 6 || currentPassword.length() > 12){
+        if(currentPassword.isEmpty() || currentPassword.length() < 6 || currentPassword.length() > 20){
             password.setError("Please Enter Password between 6 and 10 alphanumeric characters");
             valid = false;
         }
@@ -273,7 +264,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onError(FirebaseError firebaseError) {
                             progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "Email not found", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getBaseContext(),firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

@@ -1,11 +1,13 @@
 package simplify.fwm.collegepa;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +15,14 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.parse.ParseUser;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import simplify.fwm.collegepa.utils.Constants;
 
 
 /**
@@ -35,13 +41,15 @@ public class AccountFragment extends Fragment {
     @Bind(R.id.account_log_out)TextView logOut;
     @Bind(R.id.account_welcome)TextView welcome;
     @Bind(R.id.account_email) TextView displayEmail;
-    @Bind(R.id.warning_account) TextView warning;
     @Bind(R.id.account_canvas) ImageView _canvas;
+    @Bind(R.id.account_change_password)TextView _changePassword;
 
 
     // TODO: Rename and change types of parameters
 
     private OnFragmentInteractionListener mListener;
+    private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
+    private Firebase user = root.child("users").child(root.getAuth().getUid());
 
     public AccountFragment() {
         // Required empty public constructor
@@ -78,25 +86,8 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_account,container,false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
 
-        ParseUser current = ParseUser.getCurrentUser();
-        if(current != null) {
-            if (current.getBoolean("emailVerified")) {
-                warning.setVisibility(View.INVISIBLE);
-
-            } else {
-                warning.setVisibility(View.VISIBLE);
-            }
-        }
-
-        if(current!=null){
-            welcome.setText("Welcome "+current.get("firstName")+" "+current.get("lastName")+"!");
-            displayEmail.setText(current.getEmail());
-        }
-        else{
-            welcome.setText("Are you Logged in?");
-        }
 
         _canvas.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,8 +95,25 @@ public class AccountFragment extends Fragment {
                 canvasLogin();
             }
         });
+        _changePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changePassword();
+            }
+        });
+        user.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                displayEmail.setText(dataSnapshot.getValue(String.class));
+            }
 
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
         return v;
+
     }
 
 
@@ -136,6 +144,11 @@ public class AccountFragment extends Fragment {
         //TODO: Implement logging into canvas
         Snackbar.make(this.getView(),"Not implemented",Snackbar.LENGTH_LONG).show();
     }
+
+    public void changePassword(){
+        ChangePasswordDialog changePasswordDialog = new ChangePasswordDialog();
+        changePasswordDialog.setCancelable(false);
+        changePasswordDialog.show(getFragmentManager(), "ChangeCourseDialog");
+    }
 }
 
-//TODO: If user email is not verified then remove some features

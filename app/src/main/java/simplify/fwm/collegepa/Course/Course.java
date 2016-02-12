@@ -6,8 +6,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.firebase.client.Firebase;
-import com.parse.ParseObject;
-import com.parse.ParseUser;
+
 
 import org.json.JSONObject;
 
@@ -287,19 +286,6 @@ public class Course implements Comparable<Course>{
         icon = newDrawable;
     }
 
-    public void SaveToParse(ParseObject object){
-        object.put("createdby", ParseUser.getCurrentUser());
-        object.put("CourseName",this.getCourseFullName());
-        object.put("CourseID",this.getCourseName());
-        object.put("Type",this.getType());
-        object.put("Sunday", days[0]);
-        object.put("Monday",days[1]);
-        object.put("Tuesday",days[2]);
-        object.put("Wednesday",days[3]);
-        object.put("Thursday",days[4]);
-        object.put("Friday",days[5]);
-        object.put("Saturday",days[6]);
-    }
 
     public void saveToFirebase(Firebase branch){
 

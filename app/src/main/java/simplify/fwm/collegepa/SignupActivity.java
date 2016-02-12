@@ -16,9 +16,7 @@ import android.widget.Toast;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +33,6 @@ public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = "SignupActivity";
 
-    private ParseUser user;
     private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
     @Bind(R.id.signup_firstname)
     AppCompatEditText firstName;
@@ -58,7 +55,6 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
         Firebase ref = new Firebase(Constants.FIREBASE_ROOT_URL);
 
-        user = new ParseUser();
         try {
             ButterKnife.bind(this);
         } catch (Exception e) {
@@ -99,11 +95,7 @@ public class SignupActivity extends AppCompatActivity {
         emailInput = email.getText().toString();
         final String passwordInput = password.getText().toString();
 
-        user.setUsername(emailInput);
-        user.setEmail(emailInput);
-        user.setPassword(passwordInput);
-        user.put("firstName", firstNameInput);
-        user.put("lastName", lastNameInput);
+
 
 
         //Firebase Signup
@@ -219,8 +211,8 @@ public class SignupActivity extends AppCompatActivity {
             email.setError(null);
         }
 
-        if (passwordInput.isEmpty() || password.length() < 6 || password.length() > 12) {
-            password.setError("Between 6 and 12 alphanumeric characters");
+        if (passwordInput.isEmpty() || password.length() < 6 || password.length() > 20) {
+            password.setError("Between 6 and 20 alphanumeric characters");
             valid = false;
         } else {
             password.setError(null);

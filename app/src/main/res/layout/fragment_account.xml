@@ -24,10 +24,8 @@
             android:id="@+id/account_pic"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_below="@id/account_welcome"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_below="@id/account_welcome"
             android:src="@drawable/ic_account_black_48dp" />
 
 
@@ -37,8 +35,8 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_canvas"
-            android:layout_alignTop="@+id/account_log_out"
-            android:layout_alignEnd="@+id/warning_account" />
+            android:layout_alignBottom="@+id/account_log_out"
+            android:layout_alignParentRight="true" />
 
         <TextView
             android:id="@+id/account_log_out"
@@ -61,14 +59,15 @@
             android:text="email" />
 
         <TextView
-            android:id="@+id/warning_account"
+            android:id="@+id/account_change_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Change Password"
+            android:textColor="@color/colorPrimaryText"
             android:layout_above="@id/account_log_out"
-            android:layout_margin="15dp"
-            android:gravity="center_horizontal"
-            android:text="@string/warning_account"
-            android:textColor="@color/colorPrimary" />
+            android:layout_centerHorizontal="true"/>
+
+
 
 
     </RelativeLayout>
