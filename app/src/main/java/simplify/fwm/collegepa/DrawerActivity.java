@@ -104,10 +104,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         userEmail = (TextView) headerLayout.findViewById(R.id.user_email);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem) navMenu.findItem(R.id.nav_Account);
-        if (root.getAuth() == null) {
-            account_drawer.setTitle("Log In");
-        }
-
         root.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
@@ -134,29 +130,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 }
             }
         });
-//        if (root.getAuth() != null) {
 //
-//            //TODO: Get name and email of user
-//            root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    userName.setText("Welcome " + dataSnapshot.child("firstName").getValue(String.class));
-//                    userEmail.setText(dataSnapshot.child("email").getValue(String.class));
-//                }
-//
-//                @Override
-//                public void onCancelled(FirebaseError firebaseError) {
-//
-//                }
-//            });
-//
-//
-//            Loading();
-//        } else {
-//            Intent loginActivity = new Intent(this, simplify.fwm.collegepa.LoginActivity.class);
-//            startActivityForResult(loginActivity, REQUEST_LOGIN);
-//
-//        }
         if (!isConnected()) {
             showConnectionSnack();
         }

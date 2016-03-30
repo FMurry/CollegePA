@@ -2,6 +2,8 @@ package simplify.fwm.collegepa.DataStructure;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import simplify.fwm.collegepa.R;
 
 /**
  * Created by fredericmurry on 1/1/16.
+ * Handles obtaining information for the Cardview
  */
 public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.CourseViewHolder> {
 

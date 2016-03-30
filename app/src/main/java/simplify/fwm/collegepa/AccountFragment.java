@@ -148,7 +148,7 @@ public class AccountFragment extends Fragment {
     public void changePassword(){
         ChangePasswordDialog changePasswordDialog = new ChangePasswordDialog();
         changePasswordDialog.setCancelable(false);
-        changePasswordDialog.show(getFragmentManager(), "ChangeCourseDialog");
+        changePasswordDialog.show(getFragmentManager(), "Change Password");
     }
 }
 
