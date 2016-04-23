@@ -154,7 +154,8 @@ public class LoginActivity extends AppCompatActivity {
                         else{
                             onLoginFailed();
                             progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "Login Failed", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getBaseContext(), "Login Incorrect", Toast.LENGTH_LONG).show();
+                            Log.d(TAG,"Failure message: "+firebaseError.getDetails()+" "+firebaseError.getMessage());
                         }
                     }
                 });
@@ -195,6 +196,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess(){
         loginButton.setEnabled(true);
         setResult(Activity.RESULT_OK, null);
+        startActivity(new Intent(this, DrawerActivity.class));
         finish();
     }
 

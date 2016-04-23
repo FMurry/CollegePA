@@ -121,6 +121,7 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
                     v.getContext().startActivity(courseIntent);
                     Toast.makeText(v.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
                     //TODO: Implement Onclick for Specific Courses
+
                 }
             });
 

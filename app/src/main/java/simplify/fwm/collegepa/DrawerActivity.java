@@ -77,6 +77,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Starting Drawer Activity");
         setContentView(R.layout.activity_drawer);
         ButterKnife.bind(this);
         toolbar.setTitle("Courses");
@@ -109,24 +110,23 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             public void onAuthStateChanged(AuthData authData) {
                 if(authData !=null){
                     root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    userName.setText("Welcome " + dataSnapshot.child("firstName").getValue(String.class));
-                    userEmail.setText(dataSnapshot.child("email").getValue(String.class));
-                }
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                             userName.setText("Welcome " + dataSnapshot.child("firstName").getValue(String.class));
+                             userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                        }
 
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
 
-                }
-            });
+                        }
+                    });
 
-
-            Loading();
                 }
                 else {
                     Intent loginActivity = new Intent(getBaseContext(), simplify.fwm.collegepa.LoginActivity.class);
-                    startActivityForResult(loginActivity, REQUEST_LOGIN);
+                    startActivity(loginActivity);
+                    finish();
                 }
             }
         });
@@ -165,9 +165,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add_course) {
             //TODO: Change into FAB With roll animation for course and assignment-k
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            addCourseDialog addCourseDialog = new addCourseDialog();
-            addCourseDialog.show(fragmentManager, "fragment_add_course");
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            addCourseDialog addCourseDialog = new addCourseDialog();
+//            addCourseDialog.show(fragmentManager, "fragment_add_course");
+            startActivity(new Intent(this,AddCourseActivity.class));
+            finish();
             return true;
         }
 

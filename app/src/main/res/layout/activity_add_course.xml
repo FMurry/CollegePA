@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/add_course"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/colorPrimaryText"
+    android:orientation="vertical"
+    app:theme="@style/AppTheme">
+
+    <EditText
+        android:id="@+id/add_course_name"
+        android:layout_width="300dip"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Name: American History"
+        android:imeOptions="actionDone"
+        android:inputType="textCapWords" />
+
+    <EditText
+        android:id="@+id/add_course_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_course_name"
+        android:layout_margin="10dp"
+        android:hint="ID: AMER 150" />
+
+    <EditText
+        android:id="@+id/add_course_room"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_course_id"
+        android:layout_margin="10dp"
+        android:hint="Room: MQH 227"/>
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/add_course_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/add_course_room"
+        android:layout_margin="10dp"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:id="@+id/add_course_daystext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_course_spinner"
+        android:layout_margin="8dp"
+        android:text="Days:"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:id="@+id/add_course_radio_group1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_course_daystext"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/add_course_monday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Monday"
+            android:textColor="@color/colorAccent" />
+
+        <CheckBox
+            android:id="@+id/add_course_tuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Tuesday"
+            android:textColor="@color/colorAccent" />
+
+        <CheckBox
+            android:id="@+id/add_course_wednesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Wednesday"
+            android:textColor="@color/colorAccent" />
+
+        <CheckBox
+            android:id="@+id/add_course_thursday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:text="Thursday"
+            android:textColor="@color/colorAccent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_course_daystext"
+        android:layout_marginLeft="16dp"
+        android:layout_toEndOf="@id/add_course_radio_group1"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/add_course_friday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Friday"
+            android:textColor="@color/colorAccent" />
+
+        <CheckBox
+            android:id="@+id/add_course_saturday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Saturday"
+            android:textColor="@color/colorAccent" />
+
+        <CheckBox
+            android:id="@+id/add_course_sunday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Sunday"
+            android:textColor="@color/colorAccent" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/add_course_divider1"
+        android:layout_width="300dip"
+        android:layout_height="1dip"
+        android:layout_below="@id/add_course_radio_group1"
+        android:layout_centerVertical="true"
+        android:background="@color/colorAccent" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2"
+        android:layout_below="@id/add_course_divider1">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/add_course_add"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:text="Add"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/add_course_divider2"
+            android:layout_width="1dip"
+            android:layout_height="45dip"
+            android:background="@color/colorAccent" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/add_course_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:text="Cancel"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+
+</RelativeLayout>
