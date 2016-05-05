@@ -1,6 +1,7 @@
 package xyz.fmsoft.collegepa;
 
 import android.Manifest;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,9 +11,11 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +32,9 @@ import android.widget.Toast;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,9 +44,33 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
+import com.google.android.gms.plus.Account;
+import com.google.android.gms.plus.Plus;
 
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,32 +100,34 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Bind(R.id.login_forgot_password)TextView forgotPassword;
     @Bind(R.id.login_linearlayout)LinearLayout _linearlayout;
 
-    private String postSignEmail;
     private GoogleApiClient mGoogleApiClient;
+    private String OAuthtoken;
+    private GoogleSignInAccount account;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        OAuthtoken = null;
         ButterKnife.bind(this);
         if(getSupportActionBar()!=null){
             getSupportActionBar().hide();
         }
 
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(Constants.GOOGLE_OAUTH_KEY)
                 .requestEmail()
                 .build();
-        // Build a GoogleApiClient with access to the Google Sign-In API and the
-        // options specified by gso.
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(Plus.API)
                 .build();
-        // Use Google Standard WIDE sign in button
+
         _googleSignUp.setSize(SignInButton.SIZE_WIDE);
-        _googleSignUp.setScopes(gso.getScopeArray());
         _googleSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,44 +162,34 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      * Handles logging in with google account
      */
     public void googleLogin(){
+        //TODO: Ask Permission before opening account fragment
+        if(ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.GET_ACCOUNTS)
+                != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.GET_ACCOUNTS)){
 
-            Intent googleAccountIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            startActivityForResult(googleAccountIntent, REQUEST_GOOGLE_SIGNIN);
+            }
+            else{
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS}, REQUEST_PERMISSION_GET_ACCOUNT);
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
+            }
+
+        }
+        else {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
+        }
     }
 
 
 
-    private void googleLoginHelper(GoogleSignInResult googleSignInResult){
+    private void googleLoginHelper(GoogleSignInResult googleSignInResult)  {
 
         if(googleSignInResult.isSuccess()){
             Log.d(TAG,"Google Login Successful");
-            GoogleSignInAccount account = googleSignInResult.getSignInAccount();
-            final String email = account.getEmail();
-            final String name = account.getDisplayName();
-            final String personID = account.getId();
-            final Uri profilePhoto = account.getPhotoUrl();
-            root.authWithOAuthToken("google", Constants.GOOGLE_OAUTH_KEY, new Firebase.AuthResultHandler() {
-                @Override
-                public void onAuthenticated(AuthData authData) {
-                    Log.d(TAG, "Log in succeeded");
-                    root.child("users").child(authData.getUid()).child("provider").setValue(authData.getProvider());
-                    root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
-                    root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
-                    root.child("users").child(authData.getUid()).child("email").setValue(email);
-                    root.child("users").child(authData.getUid()).child("personID").setValue(personID);
-                    root.child("users").child(authData.getUid()).child("profilePhoto").setValue(profilePhoto);
-                    root.child("users").child(authData.getUid()).child("name").setValue(name);
-
-                    onLoginSuccess();
-
-
-                }
-
-                @Override
-                public void onAuthenticationError(FirebaseError firebaseError) {
-
-                }
-            });
+            account = googleSignInResult.getSignInAccount();
+            getGoogleOAuthTokenAndLogin();
 
         }
         else{
@@ -176,6 +198,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             Snackbar snackbar = Snackbar.make(_linearlayout,"Sign in Failed with code "+errorCode,Snackbar.LENGTH_LONG);
         }
     }
+
+
     public void login(){
 
         if(!validate()){
@@ -245,6 +269,50 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         }, 3000);
 
+
+    }
+
+    public void LoginWithGoogle(){
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait......");
+        progressDialog.show();
+
+        final String name = account.getDisplayName();
+        final String email = account.getEmail();
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                root.authWithOAuthToken("google", OAuthtoken, new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+
+                        root.child("users").child(authData.getUid()).child("provider").setValue(authData.getProvider());
+                        root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
+                        root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
+                        root.child("users").child(authData.getUid()).child("name").setValue(name);
+                        root.child("users").child(authData.getUid()).child("email").setValue(email);
+                        progressDialog.dismiss();
+                        onLoginSuccess();
+                    }
+
+                    @Override
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+                        Log.d(TAG,firebaseError.getDetails());
+                        if(firebaseError.getCode() == FirebaseError.DISCONNECTED){
+                            progressDialog.dismiss();
+                            Toast.makeText(getBaseContext(), "No Connection", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            onLoginFailed();
+                            progressDialog.dismiss();
+                            Toast.makeText(getBaseContext(), "Login Incorrect", Toast.LENGTH_LONG).show();
+                            Log.d(TAG,"Failure message: "+firebaseError.getDetails()+" "+firebaseError.getMessage());
+                        }
+                    }
+                });
+            }
+        },2000);
 
     }
 
@@ -377,5 +445,57 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(LoginActivity.this, "Failed: "+connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
+
+
+    private void signOut() {
+         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                //Log.d(TAG,status.getStatusMessage());
+            }
+        });
+    }
+
+    public void getGoogleOAuthTokenAndLogin(){
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                if(android.os.Debug.isDebuggerConnected()){
+                    android.os.Debug.waitForDebugger();
+                }
+                String token = null;
+                try{
+                    String scope = String.format("oauth2:%s", Scopes.PLUS_LOGIN);
+                    token = GoogleAuthUtil.getToken(getApplicationContext(), Plus.AccountApi.getAccountName(mGoogleApiClient),scope);
+                }catch (UserRecoverableAuthException e){
+                    Log.d(TAG,"UserRecoverableAuthException :"+e.getMessage());
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                    startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
+                } catch (GoogleAuthException e) {
+                    //TODO Request Permission
+                    Log.d(TAG,"GoogleAuthException: "+e.getMessage());
+
+                }
+                catch (IOException e) {
+                    Log.d(TAG,"IOException: "+e.getMessage());
+                }
+                return token;
+            }
+            @Override
+            protected void onPostExecute(String token) {
+                if (token != null) {
+                    setOAuthToken(token);
+                    LoginWithGoogle();
+                }
+            }
+        };
+        task.execute();
+        }
+
+    public void setOAuthToken(String token) {
+        OAuthtoken = token;
+    }
+
+
 }
 

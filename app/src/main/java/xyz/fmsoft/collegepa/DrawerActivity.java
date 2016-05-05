@@ -9,8 +9,10 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -35,19 +37,25 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.plus.Plus;
+
+import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import xyz.fmsoft.collegepa.utils.Constants;
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        OnFragmentInteractionListener, GoogleApiClient.OnConnectionFailedListener {
+        OnFragmentInteractionListener, GoogleApiClient.OnConnectionFailedListener{
 
 
 
@@ -75,12 +83,14 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private Snackbar snackbarConnection;
     private int theme = 0;
     private int verified = 0;
+    private GoogleApiClient mGoogleApiClient;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Starting Drawer Activity");
+        mGoogleApiClient = null;
         setContentView(R.layout.activity_drawer);
         ButterKnife.bind(this);
         toolbar.setTitle("Courses");
@@ -108,22 +118,49 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         userEmail = (TextView) headerLayout.findViewById(R.id.user_email);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem) navMenu.findItem(R.id.nav_Account);
+
         root.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
                 if(authData !=null){
-                    root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                             userName.setText("Welcome " + dataSnapshot.child("firstName").getValue(String.class));
-                             userEmail.setText(dataSnapshot.child("email").getValue(String.class));
-                        }
+                    if(authData.getProvider().equals("google")){
+                        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestEmail()
+                                .build();
 
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
+                        mGoogleApiClient = new GoogleApiClient.Builder(getBaseContext())
+                                .enableAutoManage(DrawerActivity.this /* FragmentActivity */, DrawerActivity.this /* OnConnectionFailedListener */)
+                                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                                .addApi(Plus.API)
+                                .build();
+                        mGoogleApiClient.connect();
+                        root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
+                                userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                            }
 
-                        }
-                    });
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+                                Log.d(TAG, firebaseError.getMessage());
+                            }
+                        });
+                    }
+                    else {
+                        root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
+                                userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+                                Log.d(TAG, firebaseError.getMessage());
+                            }
+                        });
+                    }
 
                 }
                 else {
@@ -244,19 +281,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 startActivity(Intent.createChooser(emailClient, "Send Email using"));
                 break;
             case R.id.nav_Log_out:
-                if (root.getAuth().getProvider() == "google") {
-                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-                    GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
-                            .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                            .build();
-                    Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
-                        @Override
-                        public void onResult(Status status) {
-                            root.unauth();
-                            Log.d(TAG,"Google Successfully Signed out");
-                        }
-                    });
+                if (root.getAuth().getProvider().equals("google")) {
+                    DisconnectGoogleAccount();
                 }
                 else {
                     root.unauth();
@@ -385,4 +411,27 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Toast.makeText(DrawerActivity.this, "Google Connection Failed   ", Toast.LENGTH_SHORT).show();
     }
+
+
+    public void DisconnectGoogleAccount(){
+
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                Log.d(TAG,"Google Successfully Signed out");
+                root.unauth();
+            }
+        });
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Log.d(TAG,"Google Account Revoked");
+                    }
+                });
+        mGoogleApiClient.disconnect();
+        Log.d(TAG,"Goole API Client Disconnected");
+    }
+
+
 }
