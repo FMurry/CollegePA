@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'fmsoftKeyStore'
+            keyPassword 'Anime0870'
+            storeFile file('/Users/fredericmurry/android/android.jks')
+            storePassword 'Anime0870'
+        }
+    }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -10,9 +18,8 @@ android {
     }
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
-
     defaultConfig {
-        applicationId "simplify.fwm.collegepa"
+        applicationId "xyz.fmsoft.collegepa"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
@@ -23,16 +30,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+        }
     }
 }
-
-
-
-
-
-
-
-
 
 
 dependencies {
@@ -46,4 +47,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.0'
     compile 'com.firebase:firebase-client-android:2.5.0'
+    compile 'com.google.android.gms:play-services:8.4.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
