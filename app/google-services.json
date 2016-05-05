@@ -1,0 +1,50 @@
+{
+  "project_info": {
+    "project_number": "360941805446",
+    "project_id": "collegepa-1213"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360941805446:android:8bbc759c04ebe465",
+        "android_client_info": {
+          "package_name": "xyz.fmsoft.collegepa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "360941805446-rpqmnk0h2uqknfu81nqovb6bv6kqr946.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.fmsoft.collegepa",
+            "certificate_hash": "C068021FD8F2DD226040978BF6BAEC9114B00235"
+          }
+        },
+        {
+          "client_id": "360941805446-oip2vr02opffl1kg7o0uhf2hbgo46fug.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeO5kRgVDPni2d13Utn7ko7v8ToIVAWMA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2,
+          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
+          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
