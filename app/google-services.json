@@ -13,6 +13,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "360941805446-rr9vp1314sora0p65tu0m21243b4gmuf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.fmsoft.collegepa",
+            "certificate_hash": "2FA2A526292C6629D0B7E9E82FF02E0CCD1FF01C"
+          }
+        },
+        {
           "client_id": "360941805446-rpqmnk0h2uqknfu81nqovb6bv6kqr946.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -32,11 +40,19 @@
       ],
       "services": {
         "analytics_service": {
-          "status": 1
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-77353725-1"
+          }
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "360941805446-oip2vr02opffl1kg7o0uhf2hbgo46fug.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2,

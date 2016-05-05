@@ -6,5 +6,5 @@ package xyz.fmsoft.collegepa.utils;
 public class Constants {
 
     public static final String FIREBASE_ROOT_URL = "https://collegepa.firebaseio.com/";
-    public static final String GOOGLE_OAUTH_KEY = "360941805446-oip2vr02opffl1kg7o0uhf2hbgo46fug.apps.googleusercontent.com";
+    public static final String GOOGLE_OAUTH_KEY = "360941805446-srvbaivb88gq40eph5pbdtdpaq03bdpo.apps.googleusercontent.com";
 }
