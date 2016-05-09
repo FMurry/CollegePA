@@ -26,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
+
+import java.io.InputStream;
+import java.net.URL;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -72,6 +76,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private ActionBarDrawerToggle toggle;
     private TextView userName;
     private TextView userEmail;
+    private ImageView profilePic;
     private boolean loggedIn;
     private MenuItem account_drawer;
     private Snackbar snackbarConnection;
@@ -110,6 +115,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         View headerLayout = navigationView.getHeaderView(0);
         userName = (TextView) headerLayout.findViewById(R.id.user_name);
         userEmail = (TextView) headerLayout.findViewById(R.id.user_email);
+        profilePic = (ImageView)headerLayout.findViewById(R.id.profileImage);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem) navMenu.findItem(R.id.nav_Account);
 
@@ -133,6 +139,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
                                 userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                                if(root.getAuth().getProvider().equals("google") || root.getAuth().getProvider().equals("facebook")){
+                                    //TODO If logged in with Google or Facebook replace profilePic with their profile image
+                                }
                             }
 
                             @Override
