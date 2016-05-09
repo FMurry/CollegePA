@@ -4,11 +4,13 @@ package xyz.fmsoft.collegepa.utils;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import xyz.fmsoft.collegepa.R;
 
@@ -17,6 +19,18 @@ import xyz.fmsoft.collegepa.R;
  */
 public class ColorPickerDialog extends AppCompatDialogFragment{
 
+    @Bind(R.id.blue_button)FloatingActionButton _blueButton;
+    @Bind(R.id.darkblue_button)FloatingActionButton _darkBlueButton;
+    @Bind(R.id.green_button)FloatingActionButton _greenButton;
+    @Bind(R.id.darkgreen_button)FloatingActionButton _darkGreenButton;
+    @Bind(R.id.orange_button)FloatingActionButton _orangeButton;
+    @Bind(R.id.darkorange_button)FloatingActionButton _darkOrangeButton;
+    @Bind(R.id.purple_button)FloatingActionButton _purpleButton;
+    @Bind(R.id.darkpurple_button)FloatingActionButton _darkPurpleButton;
+    @Bind(R.id.red_button)FloatingActionButton _redButton;
+    @Bind(R.id.darkred_button)FloatingActionButton _darkRedButton;
+    @Bind(R.id.bluegray_button)FloatingActionButton _bluegrayButton;
+    @Bind(R.id.darkbluegray_button)FloatingActionButton _darkBluegrayButton;
     public ColorPickerDialog(){
         //Empty Constructor required
     }
@@ -55,6 +69,42 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
 
     public void colorChoose(View v){
         switch (v.getId()){
+            case R.id.blue_button:
+                _blueButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.darkblue_button:
+                _darkBlueButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.green_button:
+                _greenButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.darkgreen_button:
+                _darkGreenButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.orange_button:
+                _orangeButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.darkorange_button:
+                _darkOrangeButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.purple_button:
+                _purpleButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.darkpurple_button:
+                _darkPurpleButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.red_button:
+                _redButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.darkred_button:
+                _darkRedButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.bluegray_button:
+                _bluegrayButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
+            case R.id.darkbluegray_button:
+                _darkBluegrayButton.setImageResource(R.drawable.ic_check_white_48dp);
+                break;
 
         }
     }

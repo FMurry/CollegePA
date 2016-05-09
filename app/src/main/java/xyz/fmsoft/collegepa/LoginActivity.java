@@ -533,8 +533,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     token = GoogleAuthUtil.getToken(getApplicationContext(), Plus.AccountApi.getAccountName(mGoogleApiClient),scope);
                 }catch (UserRecoverableAuthException e){
                     Log.d(TAG,"UserRecoverableAuthException :"+e.getMessage());
-                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                    startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
+                    if(mGoogleApiClient.hasConnectedApi(Plus.API)) {
+                        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                        startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
+                    }
+                    else{
+                        mGoogleApiClient.connect();
+                        getGoogleOAuthTokenAndLogin();
+                    }
                 } catch (GoogleAuthException e) {
                     //TODO Request Permission
                     Log.d(TAG,"GoogleAuthException: "+e.getMessage());

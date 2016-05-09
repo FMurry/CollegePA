@@ -22,6 +22,9 @@ import xyz.fmsoft.collegepa.utils.Constants;
 
 public class AddCourseActivity extends AppCompatActivity {
 
+    //TODO: REDO UI FOR ADD ACTIVITY
+
+
     @Bind(R.id.add_course_name)EditText _courseName;
     @Bind(R.id.add_course_id)EditText _courseID;
     @Bind(R.id.add_course_room)EditText _courseRoom;
