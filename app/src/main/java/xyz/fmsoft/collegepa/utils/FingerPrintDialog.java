@@ -1,4 +1,4 @@
-package xyz.fmsoft.collegepa;
+package xyz.fmsoft.collegepa.utils;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import xyz.fmsoft.collegepa.R;
 
 /**
  * Created by fredericmurry on 1/28/16.
