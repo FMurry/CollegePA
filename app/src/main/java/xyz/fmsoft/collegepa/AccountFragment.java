@@ -45,7 +45,7 @@ public class AccountFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
-    private Firebase user = root.child("users").child(root.getAuth().getUid());
+    private Firebase user;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -83,7 +83,23 @@ public class AccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_account,container,false);
         ButterKnife.bind(this, v);
+        if(root.getAuth() != null) {
+            user = root.child("users").child(root.getAuth().getUid());
+            user.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    displayEmail.setText(dataSnapshot.getValue(String.class));
+                }
 
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
+        }
+        else{
+            displayEmail.setText("Nothing??");
+        }
 
         _canvas.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,17 +113,7 @@ public class AccountFragment extends Fragment {
                 changePassword();
             }
         });
-        user.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                displayEmail.setText(dataSnapshot.getValue(String.class));
-            }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
         return v;
 
     }

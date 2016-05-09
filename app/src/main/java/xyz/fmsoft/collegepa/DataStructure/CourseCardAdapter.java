@@ -111,23 +111,26 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
             int[] androidColors = v.getContext().getResources().getIntArray(R.array.androidcolors);
             int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
             courseName.setBackgroundColor(randomAndroidColor);
+            final String name;
+            if(!courseName.getText().toString().equals(null)){
+                name = courseName.getText().toString();
+            }
+            else{
+                name = null;
+            }
+
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    int pos = getAdapterPosition();
                     Intent courseIntent = new Intent(v.getContext(),CourseActivity.class);
+                    courseIntent.putExtra("position", pos);
+                    courseIntent.putExtra("name",name);
                     v.getContext().startActivity(courseIntent);
-                    Toast.makeText(v.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), String.valueOf(pos), Toast.LENGTH_SHORT).show();
                     //TODO: Implement Onclick for Specific Courses
-
                 }
             });
-
-
-
         }
-
-
     }
-
-
 }

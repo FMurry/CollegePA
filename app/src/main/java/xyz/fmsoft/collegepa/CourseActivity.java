@@ -12,14 +12,24 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import xyz.fmsoft.collegepa.Course.Course;
+import xyz.fmsoft.collegepa.utils.Constants;
 
 public class CourseActivity extends AppCompatActivity {
 
+
+
+    private String courseName;
 
     @Bind(R.id.course_toolbar)Toolbar _toolbar;
     @Bind(R.id.course_detail_viewpager)ViewPager _viewPager;
@@ -44,15 +54,20 @@ public class CourseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        String nameOfCourse = getIntent().getStringExtra("name");
+        if(!nameOfCourse.equals(null)){
+            getSupportActionBar().setTitle(nameOfCourse);
+        }
+        else{
+            getSupportActionBar().setTitle("");
+        }
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new CourseDetailFragment(),"Course"); //TODO: Change Title of Fragment to course name
+        adapter.addFragment(new CourseDetailFragment(),"Course");
+        //TODO: Change Title of Fragment to course name
         //TODO: Add Assignment Fragments
         _viewPager.setAdapter(adapter);
 
         _tabLayout.setupWithViewPager(_viewPager);
-
-
 
     }
 

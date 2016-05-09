@@ -2,6 +2,7 @@ package xyz.fmsoft.collegepa.DataStructure;
 
 import android.app.Application;
 
+import com.facebook.FacebookSdk;
 import com.firebase.client.Firebase;
 
 /**
@@ -17,6 +18,7 @@ public class CollegepaApplication extends Application {
         super.onCreate();
         Firebase.setAndroidContext(this);
         Firebase.getDefaultConfig().setPersistenceEnabled(true);
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
 
     }

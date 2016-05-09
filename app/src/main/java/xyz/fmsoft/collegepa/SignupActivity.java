@@ -24,7 +24,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import xyz.fmsoft.collegepa.utils.Constants;
 
-
+//TODO Remove firstName LastName fields and firebase push Only Use Name
 /**
  * A login screen that offers login via email/password.
  */

@@ -18,7 +18,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
-    <string name="email_contact">frederic.wesley.murry@gmail.com</string>
+    <string name="email_contact">frederic.murry@fmsoft.xyz</string>
     <string name="email_subject">CollegePA FeedBack</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -121,5 +121,8 @@
     <string name="warning_account">Warning Account will be deleted in 36 hours if email is not verified</string>
     <string name="title_activity_course">CourseActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+
+    <string name="facebook_app_id">1136749836375444</string>
 
 </resources>

@@ -29,6 +29,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.internal.FacebookDialogFragment;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -97,13 +105,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Bind(R.id.login_button) AppCompatButton loginButton;
     @Bind(R.id.login_signup) TextView signUp;
     @Bind(R.id.google_signin)SignInButton _googleSignUp;
+    @Bind(R.id.facebook_login)LoginButton _facebookSignup;
     @Bind(R.id.login_forgot_password)TextView forgotPassword;
     @Bind(R.id.login_linearlayout)LinearLayout _linearlayout;
 
     private GoogleApiClient mGoogleApiClient;
     private String OAuthtoken;
     private GoogleSignInAccount account;
-
+    private CallbackManager callbackManager;
 
 
     @Override
@@ -116,6 +125,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             getSupportActionBar().hide();
         }
 
+        AppEventsLogger.activateApp(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -135,6 +145,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
+        // Set up facebook button
+        _facebookSignup.setReadPermissions("email");
+        _facebookSignup.setFragment(new FacebookDialogFragment());
+        callbackManager = CallbackManager.Factory.create();
+
+        _facebookSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                facebookLogin();
+            }
+        });
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,17 +180,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     /**
-     * Handles logging in with google account
+     * Login to app using Google Account
      */
     public void googleLogin(){
+        Log.d(TAG, "G button Pressed");
         //TODO: Ask Permission before opening account fragment
         if(ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.GET_ACCOUNTS)
                 != PackageManager.PERMISSION_GRANTED){
             if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.GET_ACCOUNTS)){
-
+                Toast.makeText(LoginActivity.this, "No Permission", Toast.LENGTH_SHORT).show();
             }
             else{
                 // No explanation needed, we can request the permission.
+                Log.d(TAG, "Requesting Permission");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS}, REQUEST_PERMISSION_GET_ACCOUNT);
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
@@ -183,7 +206,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
 
-
+    /**
+     * If the google login was successful obtain the OAuth 2.0 Key
+     * @param googleSignInResult the result of user signing in
+     */
     private void googleLoginHelper(GoogleSignInResult googleSignInResult)  {
 
         if(googleSignInResult.isSuccess()){
@@ -199,7 +225,32 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
+    /**
+     * Login to app using Facebook
+     */
+    public void facebookLogin(){
 
+        _facebookSignup.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, error.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Login to app using email and password
+     */
     public void login(){
 
         if(!validate()){
@@ -272,14 +323,18 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
+    /**
+     * Finish process of logging in with google account replicate of login() method
+     */
     public void LoginWithGoogle(){
-
+        Log.d(TAG,"Logging in with Google Account");
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait......");
         progressDialog.show();
 
         final String name = account.getDisplayName();
         final String email = account.getEmail();
+        final Uri profilePic = account.getPhotoUrl();
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -292,6 +347,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
                         root.child("users").child(authData.getUid()).child("name").setValue(name);
                         root.child("users").child(authData.getUid()).child("email").setValue(email);
+                        root.child("users").child(authData.getUid()).child("photo").setValue(profilePic.toString());
                         progressDialog.dismiss();
                         onLoginSuccess();
                     }
@@ -319,9 +375,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /**
      * Dispatch incoming result to the correct fragment.
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode the request code
+     * @param resultCode the result code
+     * @param data intent containing data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -344,6 +400,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         moveTaskToBack(true);
     }
 
+    /**
+     * Called when Login is Successful allows user to enter DrawerActivity
+     */
     public void onLoginSuccess(){
         loginButton.setEnabled(true);
         setResult(Activity.RESULT_OK, null);
@@ -351,10 +410,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         finish();
     }
 
+    /**
+     * User Failed to Login Do nothing
+     */
     public void onLoginFailed(){
         loginButton.setEnabled(true);
     }
 
+    /**
+     * Validate that login information that user entered is allowed
+     * @return True if validated false if not
+     */
     public boolean validate(){
         boolean valid = true;
 
@@ -369,16 +435,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             email.setError(null);
         }
 
-        if(currentPassword.isEmpty() || currentPassword.length() < 6 || currentPassword.length() > 20){
-            password.setError("Please Enter Password between 6 and 10 alphanumeric characters");
-            valid = false;
-        }
-        else{
-            password.setError(null);
-        }
         return valid;
     }
 
+    /**
+     * User Forgot their password validate that they entered an email prior to clicking Forgot your password
+     * @return True if validated False if not
+     */
     public boolean validateForgot(){
         boolean valid = true;
 
@@ -396,6 +459,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         return valid;
     }
 
+    /**
+     * User Forgot their password reset it
+     */
     public void forgotPassword(){
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
@@ -417,7 +483,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         @Override
                         public void onError(FirebaseError firebaseError) {
                             progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(),firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            if(firebaseError.getCode() == FirebaseError.INVALID_EMAIL){
+                                Toast.makeText(LoginActivity.this, "User not found with email", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(getBaseContext(), firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -446,16 +517,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Toast.makeText(LoginActivity.this, "Failed: "+connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 
-
-    private void signOut() {
-         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                //Log.d(TAG,status.getStatusMessage());
-            }
-        });
-    }
-
+    /**
+     * Gets the OAuth Token for account and sets it
+     */
     public void getGoogleOAuthTokenAndLogin(){
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
@@ -492,10 +556,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         task.execute();
         }
 
+    /**
+     * Mutator for OAuthtoken
+     * @param token the token to set
+     */
     public void setOAuthToken(String token) {
         OAuthtoken = token;
     }
-
-
 }
 
