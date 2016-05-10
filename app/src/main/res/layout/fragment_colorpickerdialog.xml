@@ -134,5 +134,14 @@
         android:layout_toEndOf="@id/bluegray_button"
         android:layout_below="@id/darkpurple_button"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/darkbluegray_button"
+        android:text="OK"
+        android:textSize="24sp"
+        android:layout_margin="16dp"
+        android:textColor="@color/colorPrimary"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

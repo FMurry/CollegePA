@@ -129,12 +129,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestScopes(Drive.SCOPE_FILE,Plus.SCOPE_PLUS_LOGIN)
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .addApi(Plus.API)
+                .addApi(Drive.API)
                 .build();
 
         _googleSignUp.setSize(SignInButton.SIZE_WIDE);
@@ -229,23 +231,30 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      * Login to app using Facebook
      */
     public void facebookLogin(){
+        boolean isImplemented = false;
 
-        _facebookSignup.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
+        if(isImplemented){
+            _facebookSignup.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
 
-            }
+                }
 
-            @Override
-            public void onCancel() {
+                @Override
+                public void onCancel() {
 
-            }
+                }
 
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, error.getMessage());
-            }
-        });
+                @Override
+                public void onError(FacebookException error) {
+                    Log.d(TAG, error.getMessage());
+                }
+            });
+        }
+        else{
+            Toast.makeText(LoginActivity.this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /**

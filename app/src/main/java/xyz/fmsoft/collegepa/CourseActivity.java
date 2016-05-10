@@ -23,13 +23,16 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import xyz.fmsoft.collegepa.Course.Course;
+import xyz.fmsoft.collegepa.utils.ColorPickerDialog;
 import xyz.fmsoft.collegepa.utils.Constants;
+import xyz.fmsoft.collegepa.utils.FingerPrintDialog;
 
 public class CourseActivity extends AppCompatActivity {
 
 
 
     private String courseName;
+    private static Firebase root;
 
     @Bind(R.id.course_toolbar)Toolbar _toolbar;
     @Bind(R.id.course_detail_viewpager)ViewPager _viewPager;
@@ -53,6 +56,7 @@ public class CourseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_course);
         ButterKnife.bind(this);
         setSupportActionBar(_toolbar);
+        root = new Firebase(Constants.FIREBASE_ROOT_URL);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         String nameOfCourse = getIntent().getStringExtra("name");
         if(!nameOfCourse.equals(null)){
@@ -90,6 +94,13 @@ public class CourseActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        else if(id == R.id.action_edit_color){
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
+            colorPickerDialog.show(fragmentManager, "Colorpickerdialog");
+            //TODO: call changeColor();
+        }
+
         if (id == android.R.id.home){
             finish();
         }
@@ -145,4 +156,8 @@ public class CourseActivity extends AppCompatActivity {
     }
 
 
+    public void changeColor(String color){
+        Firebase user = root.child("users").child(root.getAuth().getUid());
+        user.child("Courses").child(courseName).child("color").setValue(color);
+    }
 }

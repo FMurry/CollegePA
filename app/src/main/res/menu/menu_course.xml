@@ -7,4 +7,10 @@
         android:orderInCategory="100"
         android:title="Edit"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_edit_color"
+        android:orderInCategory="200"
+        android:title="Change Color"
+        app:showAsAction="never"/>
 </menu>

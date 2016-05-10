@@ -1,27 +1,19 @@
 {
   "project_info": {
-    "project_number": "360941805446",
-    "project_id": "collegepa-1213"
+    "project_number": "994080868368",
+    "project_id": "collegepa-1307"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:360941805446:android:8bbc759c04ebe465",
+        "mobilesdk_app_id": "1:994080868368:android:8bbc759c04ebe465",
         "android_client_info": {
           "package_name": "xyz.fmsoft.collegepa"
         }
       },
       "oauth_client": [
         {
-          "client_id": "360941805446-rr9vp1314sora0p65tu0m21243b4gmuf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "xyz.fmsoft.collegepa",
-            "certificate_hash": "2FA2A526292C6629D0B7E9E82FF02E0CCD1FF01C"
-          }
-        },
-        {
-          "client_id": "360941805446-rpqmnk0h2uqknfu81nqovb6bv6kqr946.apps.googleusercontent.com",
+          "client_id": "994080868368-kpjjf8d452r8lqffji5qr4bg6262h3ou.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "xyz.fmsoft.collegepa",
@@ -29,35 +21,41 @@
           }
         },
         {
-          "client_id": "360941805446-oip2vr02opffl1kg7o0uhf2hbgo46fug.apps.googleusercontent.com",
+          "client_id": "994080868368-7hag3viehqk4777s2hpibkaqr9k6mgcq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.fmsoft.collegepa",
+            "certificate_hash": "2FA2A526292C6629D0B7E9E82FF02E0CCD1FF01C"
+          }
+        },
+        {
+          "client_id": "994080868368-9v6fuuf1i2836q0djnmt7uh2u6i1nqco.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCeO5kRgVDPni2d13Utn7ko7v8ToIVAWMA"
+          "current_key": "AIzaSyBM9LzZ9noFPE7FeJNPd0QDwGqYvyUpe7g"
         }
       ],
       "services": {
         "analytics_service": {
           "status": 2,
           "analytics_property": {
-            "tracking_id": "UA-77353725-1"
+            "tracking_id": "UA-77549352-1"
           }
         },
         "appinvite_service": {
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "360941805446-oip2vr02opffl1kg7o0uhf2hbgo46fug.apps.googleusercontent.com",
+              "client_id": "994080868368-9v6fuuf1i2836q0djnmt7uh2u6i1nqco.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         },
         "ads_service": {
-          "status": 2,
-          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
-          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+          "status": 1
         }
       }
     }
