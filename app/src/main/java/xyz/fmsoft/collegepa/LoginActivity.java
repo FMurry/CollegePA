@@ -313,6 +313,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
                         root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
                         root.child("users").child(authData.getUid()).child("loginDate").setValue(date);
+                        //f
 
                         progressDialog.dismiss();
                         onLoginSuccess();
