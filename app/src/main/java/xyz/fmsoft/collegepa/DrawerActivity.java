@@ -115,7 +115,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         View headerLayout = navigationView.getHeaderView(0);
         userName = (TextView) headerLayout.findViewById(R.id.user_name);
         userEmail = (TextView) headerLayout.findViewById(R.id.user_email);
-        profilePic = (ImageView)headerLayout.findViewById(R.id.profileImage);
+        //profilePic = (ImageView)headerLayout.findViewById(R.id.profileImage);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem) navMenu.findItem(R.id.nav_Account);
 

@@ -18,8 +18,7 @@ public class CollegepaApplication extends Application {
         super.onCreate();
         Firebase.setAndroidContext(this);
         Firebase.getDefaultConfig().setPersistenceEnabled(true);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-
+        FacebookSdk.sdkInitialize(this);
 
     }
 }

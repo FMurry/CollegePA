@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -77,7 +78,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
@@ -149,13 +152,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         // Set up facebook button
         _facebookSignup.setReadPermissions("email");
-        _facebookSignup.setFragment(new FacebookDialogFragment());
         callbackManager = CallbackManager.Factory.create();
 
         _facebookSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                facebookLogin();
+                Toast.makeText(LoginActivity.this, "Not yet implemented", Toast.LENGTH_SHORT).show();
             }
         });
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -237,6 +239,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             _facebookSignup.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
+                    AccessToken token = loginResult.getAccessToken();
 
                 }
 
@@ -292,6 +295,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         final String emailCurrent = email.getText().toString();
         final String passwordCurrent = password.getText().toString();
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        final String date = format.format(calendar.getTime());
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -306,6 +312,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         root.child("users").child(authData.getUid()).child("provider").setValue(authData.getProvider());
                         root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
                         root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
+                        root.child("users").child(authData.getUid()).child("loginDate").setValue(date);
 
                         progressDialog.dismiss();
                         onLoginSuccess();
@@ -344,6 +351,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         final String name = account.getDisplayName();
         final String email = account.getEmail();
         final Uri profilePic = account.getPhotoUrl();
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        final String date = format.format(calendar.getTime());
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -356,7 +366,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
                         root.child("users").child(authData.getUid()).child("name").setValue(name);
                         root.child("users").child(authData.getUid()).child("email").setValue(email);
-                        root.child("users").child(authData.getUid()).child("photo").setValue(profilePic.toString());
+                        root.child("users").child(authData.getUid()).child("loginDate").setValue(date);
+                        //User may not have a profile pic if this is the case then profilePic will be null and app will crash
+                        try{
+                            root.child("users").child(authData.getUid()).child("photo").setValue(profilePic.toString());
+                        }catch (Exception e) {
+                            Log.d(TAG, e.getMessage());
+                            root.child("users").child(authData.getUid()).child("photo").setValue("NA");
+                        }
+
                         progressDialog.dismiss();
                         onLoginSuccess();
                     }
@@ -530,12 +548,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      * Gets the OAuth Token for account and sets it
      */
     public void getGoogleOAuthTokenAndLogin(){
+        if(android.os.Debug.isDebuggerConnected()){
+            android.os.Debug.waitForDebugger();
+        }
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                if(android.os.Debug.isDebuggerConnected()){
-                    android.os.Debug.waitForDebugger();
-                }
+
                 String token = null;
                 try{
                     String scope = String.format("oauth2:%s", Scopes.PLUS_LOGIN);
@@ -548,7 +567,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     }
                     else{
                         mGoogleApiClient.connect();
-                        getGoogleOAuthTokenAndLogin();
                     }
                 } catch (GoogleAuthException e) {
                     //TODO Request Permission
@@ -577,6 +595,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     public void setOAuthToken(String token) {
         OAuthtoken = token;
+        Log.d(TAG, "OAuth Token: "+OAuthtoken);
     }
 }
 

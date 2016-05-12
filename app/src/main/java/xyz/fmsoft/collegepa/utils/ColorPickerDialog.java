@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
     @Bind(R.id.darkred_button)FloatingActionButton _darkRedButton;
     @Bind(R.id.bluegray_button)FloatingActionButton _bluegrayButton;
     @Bind(R.id.darkbluegray_button)FloatingActionButton _darkBluegrayButton;
+
+    private boolean[] picked;
     public ColorPickerDialog(){
         //Empty Constructor required
     }
@@ -58,7 +61,83 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_colorpickerdialog, container);
         ButterKnife.bind(this, view);
+        picked = new boolean[14];
+        for(int i = 0;i<picked.length;i++){
+            picked[i] = false;
+        }
+        _blueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _darkBlueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _greenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _darkGreenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _orangeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _darkOrangeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _purpleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _darkPurpleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
 
+        _redButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _darkRedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _bluegrayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        _darkBluegrayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
         return view;
     }
 
@@ -67,10 +146,14 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
         super.onAttach(activity);
     }
 
-    public void colorChoose(View v){
+
+
+    public void colorChooser(View v) {
         switch (v.getId()){
             case R.id.blue_button:
                 _blueButton.setImageResource(R.drawable.ic_check_white_48dp);
+                radioGroup(R.id.blue_button);
+
                 break;
             case R.id.darkblue_button:
                 _darkBlueButton.setImageResource(R.drawable.ic_check_white_48dp);
@@ -105,7 +188,12 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
             case R.id.darkbluegray_button:
                 _darkBluegrayButton.setImageResource(R.drawable.ic_check_white_48dp);
                 break;
+            case R.id.color_ok:
+                break;
 
         }
+    }
+
+    public void radioGroup(int id){
     }
 }

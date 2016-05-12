@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -33,6 +34,7 @@ public class CourseActivity extends AppCompatActivity {
 
     private String courseName;
     private static Firebase root;
+    private ColorPickerDialog colorPickerDialog;
 
     @Bind(R.id.course_toolbar)Toolbar _toolbar;
     @Bind(R.id.course_detail_viewpager)ViewPager _viewPager;
@@ -96,7 +98,7 @@ public class CourseActivity extends AppCompatActivity {
         }
         else if(id == R.id.action_edit_color){
             FragmentManager fragmentManager = getSupportFragmentManager();
-            ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
+            colorPickerDialog = new ColorPickerDialog();
             colorPickerDialog.show(fragmentManager, "Colorpickerdialog");
             //TODO: call changeColor();
         }
@@ -160,4 +162,6 @@ public class CourseActivity extends AppCompatActivity {
         Firebase user = root.child("users").child(root.getAuth().getUid());
         user.child("Courses").child(courseName).child("color").setValue(color);
     }
+
+
 }

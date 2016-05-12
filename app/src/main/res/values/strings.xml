@@ -124,5 +124,6 @@
 
 
     <string name="facebook_app_id">1136749836375444</string>
+    <string name="fb_login_protocol_scheme">fb1136749836375444</string>
 
 </resources>
