@@ -5,7 +5,7 @@ Welcome to the College Planner Assistant app! This app is a Tasking app for coll
 <br>
 Login Page:
 <br>
-![alt tag](https://bitbucket.org/FwMurry/collegepa/src/1244f52e7724ef2b34d12b8a6aed4da25aa9a823/Screenshots/Course.png?at=master&fileviewer=file-view-default)
+![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/login.png)
 <br>
 Course Main Page:
 <br>
