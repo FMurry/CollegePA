@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,8 +35,11 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
     @Bind(R.id.darkred_button)FloatingActionButton _darkRedButton;
     @Bind(R.id.bluegray_button)FloatingActionButton _bluegrayButton;
     @Bind(R.id.darkbluegray_button)FloatingActionButton _darkBluegrayButton;
+    @Bind(R.id.color_ok)TextView _submit;
 
     private boolean[] picked;
+    ArrayList<FloatingActionButton> fabList;
+
     public ColorPickerDialog(){
         //Empty Constructor required
     }
@@ -62,6 +68,7 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
         View view = inflater.inflate(R.layout.fragment_colorpickerdialog, container);
         ButterKnife.bind(this, view);
         picked = new boolean[14];
+        fabList = new ArrayList<>();
         for(int i = 0;i<picked.length;i++){
             picked[i] = false;
         }
@@ -138,6 +145,26 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
                 colorChooser(v);
             }
         });
+        _submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorChooser(v);
+            }
+        });
+        fabList.add(_blueButton);
+        fabList.add(_darkBlueButton);
+        fabList.add(_greenButton);
+        fabList.add(_darkGreenButton);
+        fabList.add(_orangeButton);
+        fabList.add(_darkOrangeButton);
+        fabList.add(_purpleButton);
+        fabList.add(_darkPurpleButton);
+        fabList.add(_redButton);
+        fabList.add(_darkRedButton);
+        fabList.add(_bluegrayButton);
+        fabList.add(_darkBluegrayButton);
+
+
         return view;
     }
 
@@ -152,48 +179,69 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
         switch (v.getId()){
             case R.id.blue_button:
                 _blueButton.setImageResource(R.drawable.ic_check_white_48dp);
-                radioGroup(R.id.blue_button);
-
+                picked[0] = true;
+                setToggle(0);
                 break;
             case R.id.darkblue_button:
                 _darkBlueButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(1);
                 break;
             case R.id.green_button:
                 _greenButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(2);
                 break;
             case R.id.darkgreen_button:
                 _darkGreenButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(3);
                 break;
             case R.id.orange_button:
                 _orangeButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(4);
                 break;
             case R.id.darkorange_button:
                 _darkOrangeButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(5);
                 break;
             case R.id.purple_button:
                 _purpleButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(6);
                 break;
             case R.id.darkpurple_button:
                 _darkPurpleButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(7);
                 break;
             case R.id.red_button:
                 _redButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(8);
                 break;
             case R.id.darkred_button:
                 _darkRedButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(9);
                 break;
             case R.id.bluegray_button:
                 _bluegrayButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(10);
                 break;
             case R.id.darkbluegray_button:
                 _darkBluegrayButton.setImageResource(R.drawable.ic_check_white_48dp);
+                setToggle(11);
                 break;
             case R.id.color_ok:
+                dismiss();
                 break;
 
         }
     }
 
-    public void radioGroup(int id){
+    public void setToggle(int index){
+        picked[index] = true;
+        fabList.get(index).setImageResource(R.drawable.ic_check_white_48dp);
+        for(int i = 0;i<fabList.size();i++){
+            if(i!=index){
+                picked[i] = false;
+                fabList.get(i).setImageResource(0);
+            }
+        }
     }
+
 }
