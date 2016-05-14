@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .addApi(Plus.API)
                 .addApi(Drive.API)
                 .build();
-
+        mGoogleApiClient.connect();
         _googleSignUp.setSize(SignInButton.SIZE_WIDE);
         _googleSignUp.setOnClickListener(new View.OnClickListener() {
             @Override

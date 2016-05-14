@@ -133,6 +133,7 @@ public class AddCourseActivity extends AppCompatActivity {
             course.setThursday(_thursday.isChecked());
             course.setFriday(_friday.isChecked());
             course.setSaturday(_saturday.isChecked());
+            course.setColorID(getResources().getString(0+R.color.colorPrimary));
             Firebase courseBranch = userBranch.child("Courses").child(name);
             course.saveToFirebase(courseBranch);
             startActivity(new Intent(this,DrawerActivity.class));

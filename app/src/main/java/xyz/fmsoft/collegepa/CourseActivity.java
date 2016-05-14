@@ -1,5 +1,9 @@
 package xyz.fmsoft.collegepa;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,9 +13,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -28,17 +34,21 @@ import xyz.fmsoft.collegepa.utils.ColorPickerDialog;
 import xyz.fmsoft.collegepa.utils.Constants;
 import xyz.fmsoft.collegepa.utils.FingerPrintDialog;
 
-public class CourseActivity extends AppCompatActivity {
+public class CourseActivity extends AppCompatActivity implements ColorPickerDialog.OnCompleteListener{
 
 
 
     private String courseName;
     private static Firebase root;
     private ColorPickerDialog colorPickerDialog;
+    private Firebase user;
+    private final String TAG = "CourseActivity";
+    private Course current;
 
     @Bind(R.id.course_toolbar)Toolbar _toolbar;
     @Bind(R.id.course_detail_viewpager)ViewPager _viewPager;
     @Bind(R.id.course_detail_tabs)TabLayout _tabLayout;
+    @Bind(R.id.appbar)AppBarLayout _appBarLayout;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -54,15 +64,105 @@ public class CourseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        root = new Firebase(Constants.FIREBASE_ROOT_URL);
+        user = new Firebase(Constants.FIREBASE_ROOT_URL).child("users").child(root.getAuth().getUid());
+        final int position = getIntent().getIntExtra("position",0);
+        final String color = getIntent().getStringExtra("color");
+        if(color.equals("#FF33B5E5".toLowerCase())){
+            setTheme(R.style.AppThemeBlue);
+        }
+        else if(color.equals("#FF0099CC".toLowerCase())){
+            Log.d(TAG, "Setting theme to Dark Blue");
+            setTheme(R.style.AppThemeDarkBlue);
+        }
+        else if(color.equals("#FFAA66CC".toLowerCase())){
+            setTheme(R.style.AppThemePurple);
+        }
+        else if(color.equals("#FF9933CC".toLowerCase())){
+            setTheme(R.style.AppThemeDarkPurple);
+        }
+        else if(color.equals("#FF99CC00".toLowerCase())){
+            setTheme(R.style.AppThemeGreen);
+        }
+        else if(color.equals("#FF669900".toLowerCase())){
+            setTheme(R.style.AppThemeDarkGreen);
+        }
+        else if(color.equals("#FFFFBB33".toLowerCase())){
+            setTheme(R.style.AppThemeOrange);
+        }
+        else if(color.equals("#FFFF8800".toLowerCase())){
+            setTheme(R.style.AppThemeDarkOrange);
+        }
+        else if(color.equals("#FFFF4444".toLowerCase())){
+            setTheme(R.style.AppThemeRed);
+        }
+        else if(color.equals("#FFCC0000".toLowerCase())){
+            setTheme(R.style.AppThemeDarkRed);
+        }
+        else if(color.equals("#607D8B".toLowerCase())){
+            setTheme(R.style.AppTheme);
+        }
+        else if(color.equals("#455A64".toLowerCase())){
+            setTheme(R.style.AppThemeDark);
+        }
+        else{
+            setTheme(R.style.AppTheme);
+        }
+        if(android.os.Debug.isDebuggerConnected()){
+            android.os.Debug.waitForDebugger();
+        }
+
+        user.child("Courses").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int i = 0;
+                for(DataSnapshot course : dataSnapshot.getChildren()){
+
+                    if(i==position){
+                        Log.d(TAG,(String)course.child("CourseName").getValue());
+                        String courseName = (String)course.child("CourseName").getValue();
+                        getSupportActionBar().setTitle(courseName);
+                        String courseID = (String)course.child("CourseID").getValue();
+                        getSupportActionBar().setSubtitle(courseID);
+                        String room = (String)course.child("Room").getValue();
+                        String type = (String) course.child("Type").getValue();
+                        current = new Course(courseID,courseName,type);
+                        boolean sunday = (boolean)course.child("Sunday").getValue();
+                        boolean monday = (boolean)course.child("Monday").getValue();
+                        boolean tuesday = (boolean)course.child("Tuesday").getValue();
+                        boolean wednesday = (boolean)course.child("Wednesday").getValue();
+                        boolean thursday = (boolean)course.child("Thursday").getValue();
+                        boolean friday = (boolean)course.child("Friday").getValue();
+                        boolean saturday = (boolean)course.child("Saturday").getValue();
+                        //getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(current.getColorID())));
+                        // _tabLayout.setBackgroundColor(Color.parseColor(current.getColorID()));
+                        //_appBarLayout.setBackgroundColor(Color.parseColor(current.getColorID()));
+                        current.setSunday(sunday);
+                        current.setMonday(monday);
+                        current.setTuesday(tuesday);
+                        current.setWednesday(wednesday);
+                        current.setThursday(thursday);
+                        current.setFriday(friday);
+                        current.setSaturday(saturday);
+                    }
+                    i++;
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.d(TAG, firebaseError.getMessage());
+            }
+        });
         super.onCreate(savedInstanceState);
+        Log.d(TAG,"Setting views");
         setContentView(R.layout.activity_course);
         ButterKnife.bind(this);
         setSupportActionBar(_toolbar);
-        root = new Firebase(Constants.FIREBASE_ROOT_URL);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        String nameOfCourse = getIntent().getStringExtra("name");
-        if(!nameOfCourse.equals(null)){
-            getSupportActionBar().setTitle(nameOfCourse);
+        courseName = getIntent().getStringExtra("name");
+        if(!courseName.equals(null)){
+            getSupportActionBar().setTitle(courseName);
         }
         else{
             getSupportActionBar().setTitle("");
@@ -74,6 +174,8 @@ public class CourseActivity extends AppCompatActivity {
         _viewPager.setAdapter(adapter);
 
         _tabLayout.setupWithViewPager(_viewPager);
+
+
 
     }
 
@@ -108,6 +210,16 @@ public class CourseActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void OnComplete(String value) {
+
+        courseName = getSupportActionBar().getTitle().toString();// Ensure that courseName does not have default "Course Name Value
+        Firebase courseRef = new Firebase(Constants.FIREBASE_ROOT_URL).child("users").child(root.getAuth().getUid()).child("Courses").child(courseName);
+        courseRef.child("color").setValue(value);
+        finish();
+        //TODO: Refresh Activity
     }
 
 

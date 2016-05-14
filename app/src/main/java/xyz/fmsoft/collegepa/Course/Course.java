@@ -21,7 +21,7 @@ public class Course implements Comparable<Course>{
     private String room;
     private String icon;
     private boolean[] days;
-
+    private String colorID;
     private ArrayList<Assignment> assignments;
 
     private static final String TAG = "COURSE";
@@ -271,6 +271,14 @@ public class Course implements Comparable<Course>{
         return result;
     }
 
+    public String getColorID(){
+        return colorID;
+    }
+
+    public void setColorID(String newID){
+        colorID = newID;
+    }
+
     /**
      * Sets the drawable string name to be displayed
      * @param newDrawable
@@ -295,6 +303,7 @@ public class Course implements Comparable<Course>{
         branch.child("Thursday").setValue(days[4]);
         branch.child("Friday").setValue(days[5]);
         branch.child("Saturday").setValue(days[6]);
+        branch.child("color").setValue("#455A64");
 
 
 

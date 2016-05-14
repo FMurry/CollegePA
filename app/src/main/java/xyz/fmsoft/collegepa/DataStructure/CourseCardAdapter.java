@@ -2,6 +2,7 @@ package xyz.fmsoft.collegepa.DataStructure;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import java.util.Random;
 import xyz.fmsoft.collegepa.Course.Course;
 import xyz.fmsoft.collegepa.CourseActivity;
 import xyz.fmsoft.collegepa.R;
+import xyz.fmsoft.collegepa.utils.Constants;
 
 /**
  * Created by fredericmurry on 1/1/16.
@@ -26,12 +28,6 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
 
     private List<Course> courses;
 
-    static final int darkBlue = Color.parseColor("#1976D2");
-    static final int lightBlue = Color.parseColor("#03A9F4");
-    static final int green = Color.parseColor("#4CAF50");
-    static final int red = Color.parseColor("#F44336");
-    static final int darkRed = Color.parseColor("#D32F2F");
-    static final int amber = Color.parseColor("#FFC107");
 
     public CourseCardAdapter(List<Course> list){
         courses = list;
@@ -73,6 +69,9 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
         holder.courseGrade.setText(course.getGrade());
         holder.days.setText(course.getStringDays());
         holder.courseRoom.setText(course.getRoom());
+        holder.color = course.getColorID();
+        holder.courseName.setBackgroundColor(Color.parseColor(holder.color));
+
     }
 
     /**
@@ -94,10 +93,11 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
         private TextView courseGrade;
         private TextView courseRoom;
         private ImageView icon;
+        private String color;
 
         CourseViewHolder(View v){
             super(v);
-
+            color = Constants.THEME_MAIN_COLOR;
             cvData = (CardView)v.findViewById(R.id.card_view);
             courseID = (TextView)v.findViewById(R.id.cv_course_id);
             courseName = (TextView)v.findViewById(R.id.cv_course_name);
@@ -108,17 +108,14 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
             courseGrade = (TextView)v.findViewById(R.id.cv_grade);
             icon = (ImageView)v.findViewById(R.id.cv_course_icon);
 
-            int[] androidColors = v.getContext().getResources().getIntArray(R.array.androidcolors);
-            int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
-            courseName.setBackgroundColor(randomAndroidColor);
             final String name;
+            final int theme;
             if(!courseName.getText().toString().equals(null)){
                 name = courseName.getText().toString();
             }
             else{
                 name = null;
             }
-
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -126,9 +123,8 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
                     Intent courseIntent = new Intent(v.getContext(),CourseActivity.class);
                     courseIntent.putExtra("position", pos);
                     courseIntent.putExtra("name",name);
+                    courseIntent.putExtra("color",color);
                     v.getContext().startActivity(courseIntent);
-                    Toast.makeText(v.getContext(), String.valueOf(pos), Toast.LENGTH_SHORT).show();
-                    //TODO: Implement Onclick for Specific Courses
                 }
             });
         }

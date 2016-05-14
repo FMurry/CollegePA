@@ -177,19 +177,27 @@ public class CourseFragment extends Fragment {
 
     public void saveCourse(DataSnapshot snapshot){
         for(DataSnapshot child : snapshot.getChildren()){
-            String courseName = (String)child.child("CourseName").getValue(String.class);
-            String courseID = (String)child.child("CourseID").getValue(String.class);
-            String type = (String)child.child("Type").getValue(String.class);
-            Course course = new Course(courseID,courseName,type);
-            course.setRoom((String)child.child("Room").getValue(String.class));
-            course.setSunday((boolean)child.child("Sunday").getValue(boolean.class));
-            course.setMonday((boolean) child.child("Monday").getValue(boolean.class));
-            course.setTuesday((boolean) child.child("Tuesday").getValue(boolean.class));
-            course.setWednesday((boolean) child.child("Wednesday").getValue(boolean.class));
-            course.setThursday((boolean) child.child("Thursday").getValue(boolean.class));
-            course.setFriday((boolean) child.child("Friday").getValue(boolean.class));
-            course.setSaturday((boolean) child.child("Saturday").getValue(boolean.class));
-            courses.add(course);
+            try {
+                String courseName = (String) child.child("CourseName").getValue(String.class);
+                String courseID = (String) child.child("CourseID").getValue(String.class);
+                String type = (String) child.child("Type").getValue(String.class);
+                Course course = new Course(courseID, courseName, type);
+                course.setRoom((String) child.child("Room").getValue(String.class));
+                course.setSunday((boolean) child.child("Sunday").getValue(boolean.class));
+                course.setMonday((boolean) child.child("Monday").getValue(boolean.class));
+                course.setTuesday((boolean) child.child("Tuesday").getValue(boolean.class));
+                course.setWednesday((boolean) child.child("Wednesday").getValue(boolean.class));
+                course.setThursday((boolean) child.child("Thursday").getValue(boolean.class));
+                course.setFriday((boolean) child.child("Friday").getValue(boolean.class));
+                course.setSaturday((boolean) child.child("Saturday").getValue(boolean.class));
+                course.setColorID((String)child.child("color").getValue(String.class));
+                courses.add(course);
+            }
+            catch (Exception e){
+                //TODO: Report the error and send
+                root.unauth();
+
+            }
 
 
         }

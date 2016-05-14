@@ -39,7 +39,9 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
 
     private boolean[] picked;
     ArrayList<FloatingActionButton> fabList;
+    private OnCompleteListener mListener;
 
+    private final String TAG = "ColorPickerDialog";
     public ColorPickerDialog(){
         //Empty Constructor required
     }
@@ -171,6 +173,12 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        try {
+            this.mListener = (OnCompleteListener)activity;
+        }
+        catch (final ClassCastException e){
+            throw new ClassCastException(activity.toString()+" must implement OnCompleteListener");
+        }
     }
 
 
@@ -227,7 +235,7 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
                 setToggle(11);
                 break;
             case R.id.color_ok:
-                dismiss();
+                onFinish();
                 break;
 
         }
@@ -244,4 +252,61 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
         }
     }
 
+    public void onFinish(){
+        int index = 0;
+        for(int i = 0; i<picked.length; i++){
+            if(picked[i]){
+                index = i;
+            }
+        }
+        String colorID = "";
+        switch (index){
+            case 0:
+                colorID = getResources().getString(0+R.color.blue);
+                break;
+            case 1:
+                colorID = getResources().getString(0+R.color.darkblue);
+                break;
+            case 2:
+                colorID = getResources().getString(0+R.color.green);
+                break;
+            case 3:
+                colorID = getResources().getString(0+R.color.darkgreen);
+                break;
+            case 4:
+                colorID = getResources().getString(0+R.color.orange);
+                break;
+            case 5:
+                colorID = getResources().getString(0+R.color.darkorange);
+                break;
+            case 6:
+                colorID = getResources().getString(0+R.color.purple);
+                break;
+            case 7:
+                colorID = getResources().getString(0+R.color.darkpurple);
+                break;
+            case 8:
+                colorID = getResources().getString(0+R.color.red);
+                break;
+            case 9:
+                colorID = getResources().getString(0+R.color.darkred);
+                break;
+            case 10:
+                colorID = getResources().getString(0+R.color.bluegray);
+                break;
+            case 11:
+                colorID = getResources().getString(0+R.color.darkbluegray);
+                break;
+            default:
+                colorID = getResources().getString(0+R.color.colorPrimary);
+        }
+        Log.d(TAG,colorID);
+        //TODO: Pass colorID back to Activity then dismiss fragment
+        mListener.OnComplete(colorID);
+        dismiss();
+    }
+
+    public static interface OnCompleteListener {
+        public abstract void OnComplete(String value);
+    }
 }
