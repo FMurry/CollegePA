@@ -3,6 +3,7 @@ package xyz.fmsoft.collegepa.DataStructure;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -129,10 +130,15 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
                     courseIntent.putExtra("name",name);
                     courseIntent.putExtra("color",color);
                     AppCompatActivity activity = (AppCompatActivity)v.getContext();
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                            v,
-                            activity.getResources().getString(R.string.transition_string));
-                    v.getContext().startActivity(courseIntent, options.toBundle());
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
+                                v,
+                                activity.getResources().getString(R.string.transition_string));
+                        v.getContext().startActivity(courseIntent, options.toBundle());
+                    }
+                    else{
+                        v.getContext().startActivity(courseIntent);
+                    }
                 }
             });
         }
