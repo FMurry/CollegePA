@@ -240,6 +240,45 @@ public class Course implements Comparable<Course>{
     }
 
     /**
+     * Compares this instance with the specified object and indicates if they
+     * are equal. In order to be equal, {@code o} must represent the same object
+     * as this instance using a class-specific comparison. The general contract
+     * is that this comparison should be reflexive, symmetric, and transitive.
+     * Also, no object reference other than null is equal to null.
+     * <p/>
+     * <p>The default implementation returns {@code true} only if {@code this ==
+     * o}. See <a href="{@docRoot}reference/java/lang/Object.html#writing_equals">Writing a correct
+     * {@code equals} method</a>
+     * if you intend implementing your own {@code equals} method.
+     * <p/>
+     * <p>The general contract for the {@code equals} and {@link
+     * #hashCode()} methods is that if {@code equals} returns {@code true} for
+     * any two objects, then {@code hashCode()} must return the same value for
+     * these objects. This means that subclasses of {@code Object} usually
+     * override either both methods or neither of them.
+     *
+     * @param o the object to compare this instance with.
+     * @return {@code true} if the specified object is equal to this {@code
+     * Object}; {@code false} otherwise.
+     * @see #hashCode
+     */
+    @Override
+    public boolean equals(Object o) {
+        try{
+            Course c = (Course)o;
+            if(c.getCourseFullName().equals(this.getCourseFullName())){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }catch (ClassCastException ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * Returns A string that Displays the Days The Course takes place
      * @return
      */
@@ -304,12 +343,5 @@ public class Course implements Comparable<Course>{
         branch.child("Friday").setValue(days[5]);
         branch.child("Saturday").setValue(days[6]);
         branch.child("color").setValue("#455A64");
-
-
-
-
-
-
-
     }
 }

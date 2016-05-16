@@ -100,13 +100,11 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
             setTheme(R.style.AppThemeDarkRed);
         }
         else if(color.equals("#607D8B".toLowerCase())){
-            setTheme(R.style.AppTheme);
         }
         else if(color.equals("#455A64".toLowerCase())){
             setTheme(R.style.AppThemeDark);
         }
         else{
-            setTheme(R.style.AppTheme);
         }
         if(android.os.Debug.isDebuggerConnected()){
             android.os.Debug.waitForDebugger();
@@ -274,6 +272,7 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         Firebase user = root.child("users").child(root.getAuth().getUid());
         user.child("Courses").child(courseName).child("color").setValue(color);
     }
+
 
 
 }

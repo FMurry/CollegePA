@@ -191,7 +191,15 @@ public class CourseFragment extends Fragment {
                 course.setFriday((boolean) child.child("Friday").getValue(boolean.class));
                 course.setSaturday((boolean) child.child("Saturday").getValue(boolean.class));
                 course.setColorID((String)child.child("color").getValue(String.class));
-                courses.add(course);
+                boolean duplicate = false;
+                for(int i = 0;i<courses.size();i++){
+                    if(courses.get(i).equals(course)){
+                        duplicate = true;
+                    }
+                }
+                if(!duplicate){
+                    courses.add(course);
+                }
             }
             catch (Exception e){
                 //TODO: Report the error and send

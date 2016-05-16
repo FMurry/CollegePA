@@ -19,7 +19,8 @@
         android:layout_marginRight="5dp"
         android:layout_marginTop="0dp"
         card_view:cardBackgroundColor="#fff"
-        card_view:cardElevation="4dp">
+        card_view:cardElevation="4dp"
+        android:transitionName="@string/transition_string">
 
         <RelativeLayout
             android:layout_width="match_parent"
