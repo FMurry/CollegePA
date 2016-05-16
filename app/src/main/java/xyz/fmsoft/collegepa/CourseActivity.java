@@ -71,37 +71,37 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         if(color.equals("#FF33B5E5".toLowerCase())){
             setTheme(R.style.AppThemeBlue);
         }
-        else if(color.equals("#FF0099CC".toLowerCase())){
+        else if(color.equals(getString(0+R.color.darkblue).toLowerCase())){
             Log.d(TAG, "Setting theme to Dark Blue");
             setTheme(R.style.AppThemeDarkBlue);
         }
-        else if(color.equals("#FFAA66CC".toLowerCase())){
+        else if(color.equals(getString(0+R.color.purple).toLowerCase())){
             setTheme(R.style.AppThemePurple);
         }
-        else if(color.equals("#FF9933CC".toLowerCase())){
+        else if(color.equals(getString(0+R.color.darkpurple).toLowerCase())){
             setTheme(R.style.AppThemeDarkPurple);
         }
-        else if(color.equals("#FF99CC00".toLowerCase())){
+        else if(color.equals(getString(0+R.color.green).toLowerCase())){
             setTheme(R.style.AppThemeGreen);
         }
-        else if(color.equals("#FF669900".toLowerCase())){
+        else if(color.equals(getString(0+R.color.darkgreen).toLowerCase())){
             setTheme(R.style.AppThemeDarkGreen);
         }
-        else if(color.equals("#FFFFBB33".toLowerCase())){
+        else if(color.equals(getString(0+R.color.orange).toLowerCase())){
             setTheme(R.style.AppThemeOrange);
         }
-        else if(color.equals("#FFFF8800".toLowerCase())){
+        else if(color.equals(getString(0+R.color.darkorange).toLowerCase())){
             setTheme(R.style.AppThemeDarkOrange);
         }
-        else if(color.equals("#FFFF4444".toLowerCase())){
+        else if(color.equals(getString(0+R.color.red).toLowerCase())){
             setTheme(R.style.AppThemeRed);
         }
-        else if(color.equals("#FFCC0000".toLowerCase())){
+        else if(color.equals(getString(0+R.color.darkred).toLowerCase())){
             setTheme(R.style.AppThemeDarkRed);
         }
-        else if(color.equals("#607D8B".toLowerCase())){
+        else if(color.equals(getString(0+R.color.bluegray).toLowerCase())){
         }
-        else if(color.equals("#455A64".toLowerCase())){
+        else if(color.equals(getString(0+R.color.darkbluegray).toLowerCase())){
             setTheme(R.style.AppThemeDark);
         }
         else{
