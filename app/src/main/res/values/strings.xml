@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">CollegePA</string>
 
-    <!-- Parse keys-->
-    <string name="parse_app_id">Fjo84GyuefgeHHdRc1Le2cssMz3x9DKJ3xTwhcKf</string>
-    <string name="parse_client_key">Rq7Dt1KoOX0hWSCSAMos1jQXUNHGu0A1csMoqxR4</string>
+
 
     <string name="info">Welcome to the College Personal Assistant app! This app is a Tasking app for college students. You will be able to add classes and
     assignments. Essentially this is a digital planner</string>
@@ -127,6 +125,8 @@
     <string name="fb_login_protocol_scheme">fb1136749836375444</string>
 
     <string name="transition_string">transition1</string>
+
+    <string name="google_web_client_id">994080868368-p7pkfvdcnbdltv7b60l1iuamhhrcmrd4.apps.googleusercontent.com</string>
 
 
 </resources>

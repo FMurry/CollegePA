@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "994080868368",
-    "project_id": "collegepa-1307"
+    "firebase_url": "https://collegepa-1307.firebaseio.com",
+    "project_id": "collegepa-1307",
+    "storage_bucket": "collegepa-1307.appspot.com"
   },
   "client": [
     {
@@ -29,6 +31,10 @@
           }
         },
         {
+          "client_id": "994080868368-p7pkfvdcnbdltv7b60l1iuamhhrcmrd4.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "994080868368-9v6fuuf1i2836q0djnmt7uh2u6i1nqco.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -49,7 +55,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "994080868368-9v6fuuf1i2836q0djnmt7uh2u6i1nqco.apps.googleusercontent.com",
+              "client_id": "994080868368-p7pkfvdcnbdltv7b60l1iuamhhrcmrd4.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

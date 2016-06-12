@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,11 +32,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import 	com.google.firebase.database.DataSnapshot;
+import 	com.google.firebase.database.DatabaseReference;
+import 	com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import 	com.google.firebase.database.ValueEventListener;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -44,13 +49,13 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import xyz.fmsoft.collegepa.utils.Constants;
 import xyz.fmsoft.collegepa.utils.FingerPrintDialog;
+
+//TODO: Get up to date with new Firebase
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener, GoogleApiClient.OnConnectionFailedListener{
@@ -61,7 +66,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private static final int REQUEST_ADD = 2;
     private static final int REQUEST_FINGERPRINT = 3;
     private static final String TAG = "DrawerActivity";
-    private final Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
+    private DatabaseReference root;
 
     @Bind(R.id.drawer_layout)
     DrawerLayout drawer;
@@ -82,14 +87,24 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private Snackbar snackbarConnection;
     private int theme = 0;
     private int verified = 0;
+    private GoogleSignInOptions gso;
     private GoogleApiClient mGoogleApiClient;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Starting Drawer Activity");
-        mGoogleApiClient = null;
+         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken(getString(R.string.google_web_client_id))
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        root = FirebaseDatabase.getInstance().getReference();
         setContentView(R.layout.activity_drawer);
         ButterKnife.bind(this);
         toolbar.setTitle("Courses");
@@ -118,51 +133,71 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         //profilePic = (ImageView)headerLayout.findViewById(R.id.profileImage);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem) navMenu.findItem(R.id.nav_Account);
-
-        root.addAuthStateListener(new Firebase.AuthStateListener() {
+        if(android.os.Debug.isDebuggerConnected()){
+            android.os.Debug.waitForDebugger();
+        }
+        mAuthStateListener = new FirebaseAuth.AuthStateListener(){
             @Override
-            public void onAuthStateChanged(AuthData authData) {
-                if(authData !=null){
-                    if(authData.getProvider().equals("google")){
-                        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                .requestEmail()
-                                .build();
-
-                        mGoogleApiClient = new GoogleApiClient.Builder(getBaseContext())
-                                .enableAutoManage(DrawerActivity.this /* FragmentActivity */, DrawerActivity.this /* OnConnectionFailedListener */)
-                                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                                .addApi(Plus.API)
-                                .build();
-                        mGoogleApiClient.connect();
-                        root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser() !=null){
+                    final StringBuilder providers = new StringBuilder("");
+                    for(String str : firebaseAuth.getCurrentUser().getProviders()){
+                        providers.append(str);
+                    }
+                    if(providers.toString().contains("google.com")){
+                        root.child("users").child(firebaseAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
                                 userEmail.setText(dataSnapshot.child("email").getValue(String.class));
-                                if(root.getAuth().getProvider().equals("google") || root.getAuth().getProvider().equals("facebook")){
+                                if(dataSnapshot.child("provider").getValue(String.class).contains("google.com")
+                                        || dataSnapshot.child("provider").getValue(String.class).contains("facebook.com")){
                                     //TODO If logged in with Google or Facebook replace profilePic with their profile image
                                 }
                             }
 
                             @Override
-                            public void onCancelled(FirebaseError firebaseError) {
-                                Log.d(TAG, firebaseError.getMessage());
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.d(TAG,databaseError.getMessage());
                             }
                         });
                     }
-                    else {
-                        root.child("users").child(root.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    else if(providers.toString().contains("facebook.com")){
+                        FacebookSdk.sdkInitialize(getApplicationContext());
+                        root.child("users").child(firebaseAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
                                 userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                                if(dataSnapshot.child("provider").getValue(String.class).contains("google.com")
+                                        || dataSnapshot.child("provider").getValue(String.class).contains("facebook.com")){
+                                    //TODO If logged in with Google or Facebook replace profilePic with their profile image
+                                }
                             }
 
                             @Override
-                            public void onCancelled(FirebaseError firebaseError) {
-                                Log.d(TAG, firebaseError.getMessage());
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.d(TAG,databaseError.getMessage());
                             }
                         });
+                    }
+                    else {
+                        root.child("users").child(firebaseAuth.getCurrentUser().getUid())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
+                                        userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.d(TAG, databaseError.getMessage());
+
+                                    }
+                                });
                     }
 
                 }
@@ -172,12 +207,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     finish();
                 }
             }
-        });
-//
-        if (!isConnected()) {
-            showConnectionSnack();
-        }
-
+        };
+        FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
     }
 
     @Override
@@ -213,7 +244,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 //            addCourseDialog.show(fragmentManager, "fragment_add_course");
 
             startActivity(new Intent(this,AddCourseActivity.class));
-            //finish();
+            finish();
             return true;
         }
 
@@ -229,6 +260,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         Fragment fragment = null;
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         boolean frag = true;
         Class fragmentClass = null;
         switch (item.getItemId()) {
@@ -265,7 +297,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.nav_Account:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
-                if (root.getAuth() == null) {
+                if (user == null) {
                     startActivityForResult(loginActivity, REQUEST_LOGIN);
                     frag = false;
                 } else {
@@ -284,11 +316,20 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 startActivity(Intent.createChooser(emailClient, "Send Email using"));
                 break;
             case R.id.nav_Log_out:
-                if (root.getAuth().getProvider().equals("google")) {
+                StringBuilder str = new StringBuilder("");
+                user = FirebaseAuth.getInstance().getCurrentUser();
+                for(String s : user.getProviders()){
+                    str.append(s);
+                }
+                if (str.toString().contains("google.com")) {
                     DisconnectGoogleAccount();
                 }
+                else if(str.toString().contains("facebook.com")){
+                    LoginManager.getInstance().logOut();
+                    FirebaseAuth.getInstance().signOut();
+                }
                 else {
-                    root.unauth();
+                    FirebaseAuth.getInstance().signOut();
                 }
                 recreate();
                 break;
@@ -315,7 +356,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     public void OnClick(View v) {
         switch (v.getId()) {
             case R.id.account_log_out:
-                root.unauth();
+                FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(this, LoginActivity.class));
                 break;
         }
@@ -417,12 +458,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
 
     public void DisconnectGoogleAccount(){
-
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
+                FirebaseAuth.getInstance().signOut();
                 Log.d(TAG,"Google Successfully Signed out");
-                root.unauth();
             }
         });
         Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
@@ -433,8 +473,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     }
                 });
         mGoogleApiClient.disconnect();
+        FirebaseAuth.getInstance().signOut();
         Log.d(TAG,"Goole API Client Disconnected");
     }
-
 
 }

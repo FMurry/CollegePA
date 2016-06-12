@@ -3,7 +3,7 @@ package xyz.fmsoft.collegepa.DataStructure;
 import android.app.Application;
 
 import com.facebook.FacebookSdk;
-import com.firebase.client.Firebase;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by fredericmurry on 1/3/16.
@@ -16,9 +16,8 @@ public class CollegepaApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Firebase.setAndroidContext(this);
-        Firebase.getDefaultConfig().setPersistenceEnabled(true);
-        FacebookSdk.sdkInitialize(this);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
 
     }
 }

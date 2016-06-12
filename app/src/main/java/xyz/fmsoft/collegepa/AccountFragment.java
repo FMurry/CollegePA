@@ -5,20 +5,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import xyz.fmsoft.collegepa.utils.Constants;
 
 
 /**
@@ -44,8 +47,9 @@ public class AccountFragment extends Fragment {
     // TODO: Rename and change types of parameters
 
     private OnFragmentInteractionListener mListener;
-    private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
-    private Firebase user;
+    private DatabaseReference root = FirebaseDatabase.getInstance().getReference();
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference user;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -69,6 +73,7 @@ public class AccountFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseAuth = FirebaseAuth.getInstance();
 
     }
 
@@ -83,16 +88,17 @@ public class AccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_account,container,false);
         ButterKnife.bind(this, v);
-        if(root.getAuth() != null) {
-            user = root.child("users").child(root.getAuth().getUid());
+        if(firebaseAuth.getCurrentUser() != null) {
+            user = root.child("users").child(firebaseAuth.getCurrentUser().getUid());
             user.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
+
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     displayEmail.setText(dataSnapshot.getValue(String.class));
                 }
 
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                public void onCancelled(DatabaseError databaseError) {
 
                 }
             });

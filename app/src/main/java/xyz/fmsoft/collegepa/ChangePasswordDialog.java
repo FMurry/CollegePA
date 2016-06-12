@@ -11,10 +11,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,8 +35,9 @@ public class ChangePasswordDialog extends DialogFragment {
     @Bind(R.id.changepassword_password)EditText _password;
     @Bind(R.id.changepassword_password2)EditText _password2;
 
-    private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
-    private Firebase user = root.child("users").child(root.getAuth().getUid());
+    private DatabaseReference root = FirebaseDatabase.getInstance().getReference();
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private DatabaseReference user;
     private String email;
 
 
@@ -48,6 +52,7 @@ public class ChangePasswordDialog extends DialogFragment {
 
         View v = inflater.inflate(R.layout.fragment_change_password_dialog,container,false);
         ButterKnife.bind(this, v);
+        user = root.child(firebaseAuth.getCurrentUser().getUid());
         email = "";
 
         _ok.setOnClickListener(new View.OnClickListener() {
@@ -64,15 +69,17 @@ public class ChangePasswordDialog extends DialogFragment {
         });
 
         user.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 setEmail(dataSnapshot.getValue(String.class));
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
+
         });
 
 
@@ -113,19 +120,7 @@ public class ChangePasswordDialog extends DialogFragment {
         String password = _password.getText().toString();
         String password2 = _password2.getText().toString();
 
-        root.changePassword(mail, oldPassword, password, new Firebase.ResultHandler() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(getContext(), "Password Changed", Toast.LENGTH_SHORT).show();
-
-                close();
-            }
-
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                Toast.makeText(getContext(), firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        //TODO: Change password
 
     }
 

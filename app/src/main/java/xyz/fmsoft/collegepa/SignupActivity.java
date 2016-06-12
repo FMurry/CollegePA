@@ -2,6 +2,7 @@ package xyz.fmsoft.collegepa;
 
 
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,10 +13,14 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +37,8 @@ public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = "SignupActivity";
 
-    private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
+    private DatabaseReference root;
+    private FirebaseAuth firebaseAuth;
     @Bind(R.id.signup_firstname)
     AppCompatEditText firstName;
     @Bind(R.id.signup_lastname)
@@ -52,8 +58,8 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        Firebase ref = new Firebase(Constants.FIREBASE_ROOT_URL);
-
+        firebaseAuth = FirebaseAuth.getInstance();
+        root = FirebaseDatabase.getInstance().getReference();
         try {
             ButterKnife.bind(this);
         } catch (Exception e) {
@@ -98,80 +104,36 @@ public class SignupActivity extends AppCompatActivity {
 
 
         //Firebase Signup
-        root.createUser(emailInput, passwordInput, new Firebase.ResultHandler() {
+        firebaseAuth.createUserWithEmailAndPassword(emailInput,passwordInput)
+        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
-            public void onSuccess() {
-                onSignupSuccess();
-
-                root.authWithPassword(emailInput, passwordInput, new Firebase.AuthResultHandler() {
-                    @Override
-                    public void onAuthenticated(AuthData authData) {
-                        Map<String, String> map = new HashMap<>();
-                        map.put("provider", authData.getProvider());
-                        map.put("email", emailInput);
-                        map.put("firstName",firstNameInput);
-                        map.put("lastName",lastNameInput);
-                        map.put("device", Build.MODEL);
-                        map.put("OSversion", String.valueOf(Build.VERSION.SDK_INT));
-                        root.child("users").child(authData.getUid()).setValue(map);
-
-                    }
-
-                    @Override
-                    public void onAuthenticationError(FirebaseError firebaseError) {
-                        Log.d(TAG, firebaseError.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            public void onError(final FirebaseError firebaseError) {
-                final FirebaseError error = firebaseError;
-
-                onSignupFailed();
-                if (error.getCode() == FirebaseError.EMAIL_TAKEN) {
-                    email.setError(error.getMessage());
-                    Toast.makeText(getBaseContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getBaseContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d(TAG, firebaseError.getMessage());
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    Map<String, String> map = new HashMap<>();
+                    StringBuilder str = new StringBuilder("");
+                    for(String s : user.getProviders()) str.append(s);
+                    map.put("provider", str.toString());
+                    map.put("email", emailInput);
+                    map.put("firstName",firstNameInput);
+                    map.put("lastName",lastNameInput);
+                    map.put("device", Build.MODEL);
+                    map.put("OSversion", String.valueOf(Build.VERSION.SDK_INT));
+                    root.child("users").child(user.getUid()).setValue(map);
+                    onSignupSuccess();
                 }
-
-
+                else{
+                    Toast.makeText(SignupActivity.this, "Signup Failed", Toast.LENGTH_SHORT).show();
+                    onSignupFailed();
+                }
             }
         });
-
-                /*
-                //Parse Signup
-                user.signUpInBackground(new SignUpCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-
-                            onSignupSuccess();
-                            progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "Sign Up Successful", Toast.LENGTH_LONG).show();
-
-                        } else {
-                            e.printStackTrace();
-
-                            ParseUser.logOut();
-                            onSignupFailed();
-                            progressDialog.dismiss();
-                            email.setError("Email already has account");
-
-                        }
-                    }
-                });
-                */
-
-
     }
 
     public void onSignupSuccess() {
         signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
-        root.unauth();
+        firebaseAuth.signOut();
         finish();
     }
 

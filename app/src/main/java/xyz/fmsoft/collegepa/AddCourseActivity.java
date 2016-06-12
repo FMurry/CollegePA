@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -12,8 +13,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,9 +40,11 @@ public class AddCourseActivity extends AppCompatActivity {
     @Bind(R.id.add_course_saturday)CheckBox _saturday;
     @Bind(R.id.add_course_sunday)CheckBox _sunday;
 
-    private AuthData user;
-    private Firebase root;
-    private Firebase userBranch;
+    private static final String TAG = "AddCourseActivity";
+
+    private FirebaseUser user;
+    private DatabaseReference root;
+    private DatabaseReference userBranch;
 
 
     @Override
@@ -47,9 +52,9 @@ public class AddCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
         ButterKnife.bind(this);
-
-        root = new Firebase(Constants.FIREBASE_ROOT_URL);
-        user = root.getAuth();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG,user.getUid());
+        root = FirebaseDatabase.getInstance().getReference();
         userBranch = root.child("users").child(user.getUid());
 
         if(getActionBar() != null) {
@@ -134,10 +139,11 @@ public class AddCourseActivity extends AppCompatActivity {
             course.setFriday(_friday.isChecked());
             course.setSaturday(_saturday.isChecked());
             course.setColorID(getResources().getString(0+R.color.colorPrimary));
-            Firebase courseBranch = userBranch.child("Courses").child(name);
+            DatabaseReference courseBranch = userBranch.child("Courses").child(name);
             course.saveToFirebase(courseBranch);
             startActivity(new Intent(this,DrawerActivity.class));
             finish();
+
         }
     }
 

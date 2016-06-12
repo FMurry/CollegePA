@@ -36,11 +36,10 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.FacebookDialogFragment;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
+
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -59,6 +58,17 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.plus.Account;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 import org.apache.http.HttpResponse;
@@ -75,6 +85,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -100,7 +111,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static String ACCOUNT_PERMISSIONS[] = new String[]{
             Manifest.permission.GET_ACCOUNTS
     };
-    private Firebase root = new Firebase(Constants.FIREBASE_ROOT_URL);
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference root;
 
 
     @Bind(R.id.login_email) AppCompatEditText email;
@@ -116,11 +128,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private String OAuthtoken;
     private GoogleSignInAccount account;
     private CallbackManager callbackManager;
+    private AppCompatActivity activity;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
+        firebaseAuth = FirebaseAuth.getInstance();
+        root = FirebaseDatabase.getInstance().getReference();
+        activity = this;
         setContentView(R.layout.activity_login);
         OAuthtoken = null;
         ButterKnife.bind(this);
@@ -128,18 +145,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             getSupportActionBar().hide();
         }
 
+
         AppEventsLogger.activateApp(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestScopes(Drive.SCOPE_FILE,Plus.SCOPE_PLUS_LOGIN)
+                .requestIdToken(getString(R.string.google_web_client_id))
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .addApi(Plus.API)
-                .addApi(Drive.API)
                 .build();
         mGoogleApiClient.connect();
         _googleSignUp.setSize(SignInButton.SIZE_WIDE);
@@ -151,13 +167,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         });
 
         // Set up facebook button
-        _facebookSignup.setReadPermissions("email");
+        _facebookSignup.setReadPermissions("email","public_profile");
         callbackManager = CallbackManager.Factory.create();
 
         _facebookSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this, "Not yet implemented", Toast.LENGTH_SHORT).show();
+                facebookLogin();
+
             }
         });
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -210,6 +227,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
 
+
     /**
      * If the google login was successful obtain the OAuth 2.0 Key
      * @param googleSignInResult the result of user signing in
@@ -219,7 +237,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if(googleSignInResult.isSuccess()){
             Log.d(TAG,"Google Login Successful");
             account = googleSignInResult.getSignInAccount();
-            getGoogleOAuthTokenAndLogin();
+            //getGoogleOAuthTokenAndLogin();
+            LoginWithGoogle();
 
         }
         else{
@@ -233,19 +252,25 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      * Login to app using Facebook
      */
     public void facebookLogin(){
-        boolean isImplemented = false;
 
-        if(isImplemented){
+            Log.d(TAG,"Facebook Login Entered");
+            if(android.os.Debug.isDebuggerConnected()){
+                android.os.Debug.waitForDebugger();
+            }
             _facebookSignup.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
+                    Log.d(TAG,"Facebook onSuccess");
                     AccessToken token = loginResult.getAccessToken();
+                    Log.d(TAG,token.getToken());
+                    AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+                    facebookLoginHelper(credential);
 
                 }
 
                 @Override
                 public void onCancel() {
-
+                    Log.d(TAG,"onCancel");
                 }
 
                 @Override
@@ -253,11 +278,50 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     Log.d(TAG, error.getMessage());
                 }
             });
-        }
-        else{
-            Toast.makeText(LoginActivity.this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
-        }
 
+
+    }
+
+    public void facebookLoginHelper(AuthCredential credential){
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(TAG,"Logging in with Facebook Account");
+                final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
+                progressDialog.setMessage("Please wait......");
+                progressDialog.show();
+
+                if(task.isSuccessful()){
+                    AuthResult authResult = task.getResult();
+                    FirebaseUser user = authResult.getUser();
+                    List<String> providers = user.getProviders();
+                    StringBuilder provider = new StringBuilder("");
+                    for(String str: providers){
+                        provider.append(str);
+                    }
+                    String name = user.getDisplayName();
+                    Calendar calendar = Calendar.getInstance();
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                    final String date = format.format(calendar.getTime());
+                    root.child("users").child(user.getUid()).child("provider").setValue(provider.toString());
+                    root.child("users").child(user.getUid()).child("device").setValue(Build.MODEL);
+                    root.child("users").child(user.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
+                    root.child("users").child(user.getUid()).child("name").setValue(name);
+                    root.child("users").child(user.getUid()).child("email").setValue(email);
+                    root.child("users").child(user.getUid()).child("loginDate").setValue(date);
+                    progressDialog.dismiss();
+                    onLoginSuccess();
+
+                }
+                else{
+                    Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, task.getException().getMessage());
+                    progressDialog.dismiss();
+                    LoginManager.getInstance().logOut();
+                    onLoginFailed();
+                }
+            }
+        });
     }
 
     /**
@@ -303,37 +367,36 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             public void run() {
 
                 //FIREBASE LOGIN
-                root.authWithPassword(emailCurrent, passwordCurrent, new Firebase.AuthResultHandler() {
+                firebaseAuth.signInWithEmailAndPassword(emailCurrent, passwordCurrent)
+                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onAuthenticated(AuthData authData) {
-                        Log.d(TAG, "Log in succeeded");
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "Log in succeeded");
 
+                            FirebaseUser fUser = firebaseAuth.getCurrentUser();
+                            String uID = fUser.getUid();
+                            StringBuilder str = new StringBuilder("");
+                            for(String s : fUser.getProviders()) str.append(s);
 
-                        root.child("users").child(authData.getUid()).child("provider").setValue(authData.getProvider());
-                        root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
-                        root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
-                        root.child("users").child(authData.getUid()).child("loginDate").setValue(date);
-                        //f
+                            root.child("users").child(uID).child("provider").setValue(str.toString());
+                            root.child("users").child(uID).child("device").setValue(Build.MODEL);
+                            root.child("users").child(uID).child("OSversion").setValue(Build.VERSION.SDK_INT);
+                            root.child("users").child(uID).child("loginDate").setValue(date);
 
-                        progressDialog.dismiss();
-                        onLoginSuccess();
-                    }
-
-                    @Override
-                    public void onAuthenticationError(FirebaseError firebaseError) {
-                        if(firebaseError.getCode() == FirebaseError.DISCONNECTED){
                             progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "No Connection", Toast.LENGTH_SHORT).show();
+                            onLoginSuccess();
                         }
+
                         else{
-                            onLoginFailed();
                             progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "Login Incorrect", Toast.LENGTH_LONG).show();
-                            Log.d(TAG,"Failure message: "+firebaseError.getDetails()+" "+firebaseError.getMessage());
+                            Exception exception = task.getException();
+                            Log.d(TAG,exception.getMessage());
+                            Toast.makeText(LoginActivity.this, "Login Incorrect", Toast.LENGTH_LONG).show();
+                            onLoginFailed();
                         }
                     }
                 });
-
             }
         }, 3000);
 
@@ -349,6 +412,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         progressDialog.setMessage("Please wait......");
         progressDialog.show();
 
+        final AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
+
         final String name = account.getDisplayName();
         final String email = account.getEmail();
         final Uri profilePic = account.getPhotoUrl();
@@ -358,43 +423,41 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                root.authWithOAuthToken("google", OAuthtoken, new Firebase.AuthResultHandler() {
-                    @Override
-                    public void onAuthenticated(AuthData authData) {
+                firebaseAuth.signInWithCredential(credential)
+                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if(task.isSuccessful()){
+                                    AuthResult authResult = task.getResult();
+                                    FirebaseUser user = authResult.getUser();
+                                    List<String> providers = user.getProviders();
+                                    StringBuilder provider = new StringBuilder("");
+                                    for(String str: providers){
+                                        provider.append(str);
+                                    }
+                                    root.child("users").child(user.getUid()).child("provider").setValue(provider.toString());
+                                    root.child("users").child(user.getUid()).child("device").setValue(Build.MODEL);
+                                    root.child("users").child(user.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
+                                    root.child("users").child(user.getUid()).child("name").setValue(name);
+                                    root.child("users").child(user.getUid()).child("email").setValue(email);
+                                    root.child("users").child(user.getUid()).child("loginDate").setValue(date);
+                                    try{
+                                        root.child("users").child(user.getUid()).child("photo").setValue(profilePic.toString());
+                                    }catch (Exception e) {
+                                        Log.d(TAG, e.getMessage());
+                                        root.child("users").child(user.getUid()).child("photo").setValue("NA");
+                                    }
+                                    progressDialog.dismiss();
+                                    onLoginSuccess();
+                                }
+                                else{
+                                    Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    onLoginFailed();
+                                }
+                            }
+                        });
 
-                        root.child("users").child(authData.getUid()).child("provider").setValue(authData.getProvider());
-                        root.child("users").child(authData.getUid()).child("device").setValue(Build.MODEL);
-                        root.child("users").child(authData.getUid()).child("OSversion").setValue(Build.VERSION.SDK_INT);
-                        root.child("users").child(authData.getUid()).child("name").setValue(name);
-                        root.child("users").child(authData.getUid()).child("email").setValue(email);
-                        root.child("users").child(authData.getUid()).child("loginDate").setValue(date);
-                        //User may not have a profile pic if this is the case then profilePic will be null and app will crash
-                        try{
-                            root.child("users").child(authData.getUid()).child("photo").setValue(profilePic.toString());
-                        }catch (Exception e) {
-                            Log.d(TAG, e.getMessage());
-                            root.child("users").child(authData.getUid()).child("photo").setValue("NA");
-                        }
-
-                        progressDialog.dismiss();
-                        onLoginSuccess();
-                    }
-
-                    @Override
-                    public void onAuthenticationError(FirebaseError firebaseError) {
-                        Log.d(TAG,firebaseError.getDetails());
-                        if(firebaseError.getCode() == FirebaseError.DISCONNECTED){
-                            progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "No Connection", Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            onLoginFailed();
-                            progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "Login Incorrect", Toast.LENGTH_LONG).show();
-                            Log.d(TAG,"Failure message: "+firebaseError.getDetails()+" "+firebaseError.getMessage());
-                        }
-                    }
-                });
             }
         },2000);
 
@@ -416,6 +479,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         else if(requestCode == REQUEST_GOOGLE_SIGNIN){
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             googleLoginHelper(result);
+        }
+        else{
+            callbackManager.onActivityResult(requestCode,resultCode,data);
         }
     }
 
@@ -501,24 +567,21 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             new android.os.Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    root.resetPassword(currentEmail, new Firebase.ResultHandler() {
-                        @Override
-                        public void onSuccess() {
-                            progressDialog.dismiss();
-                            Toast.makeText(getBaseContext(), "Check Email for Password Reset", Toast.LENGTH_SHORT).show();
-                        }
+                    firebaseAuth = FirebaseAuth.getInstance();
+                    firebaseAuth.sendPasswordResetEmail(currentEmail)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()) {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(getBaseContext(), "Check Email for Password Reset", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else{
+                                        Toast.makeText(LoginActivity.this, "User not found with email", Toast.LENGTH_SHORT).show();
 
-                        @Override
-                        public void onError(FirebaseError firebaseError) {
-                            progressDialog.dismiss();
-                            if(firebaseError.getCode() == FirebaseError.INVALID_EMAIL){
-                                Toast.makeText(LoginActivity.this, "User not found with email", Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-                                Toast.makeText(getBaseContext(), firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                                    }
+                                }
+                            });
                 }
             }, 2500);
 

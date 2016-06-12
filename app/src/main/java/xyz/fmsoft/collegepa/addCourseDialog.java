@@ -13,8 +13,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -40,9 +42,10 @@ public class addCourseDialog extends DialogFragment {
     @Bind(R.id.add_course_saturday)CheckBox _saturday;
     @Bind(R.id.add_course_sunday)CheckBox _sunday;
 
-    private AuthData user;
-    private Firebase root;
-    private Firebase userBranch;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
+    private DatabaseReference root;
+    private DatabaseReference userBranch;
 
 
     public addCourseDialog(){
@@ -55,8 +58,9 @@ public class addCourseDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_course, container);
         ButterKnife.bind(this, view);
-        root = new Firebase(Constants.FIREBASE_ROOT_URL);
-        user = root.getAuth();
+        firebaseAuth = FirebaseAuth.getInstance();
+        root = FirebaseDatabase.getInstance().getReference();
+        user = firebaseAuth.getCurrentUser();
         userBranch = root.child("users").child(user.getUid());
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.course_types,
@@ -123,7 +127,7 @@ public class addCourseDialog extends DialogFragment {
             course.setThursday(_thursday.isChecked());
             course.setFriday(_friday.isChecked());
             course.setSaturday(_saturday.isChecked());
-            Firebase courseBranch = userBranch.child("Courses").child(name);
+            DatabaseReference courseBranch = userBranch.child("Courses").child(name);
             course.saveToFirebase(courseBranch);
             Close();
             getActivity().recreate();

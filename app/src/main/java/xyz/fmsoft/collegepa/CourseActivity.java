@@ -19,10 +19,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +42,9 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
 
 
     private String courseName;
-    private static Firebase root;
+    private static DatabaseReference root;
     private ColorPickerDialog colorPickerDialog;
-    private Firebase user;
+    private DatabaseReference user;
     private final String TAG = "CourseActivity";
     private Course current;
 
@@ -64,8 +67,8 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        root = new Firebase(Constants.FIREBASE_ROOT_URL);
-        user = new Firebase(Constants.FIREBASE_ROOT_URL).child("users").child(root.getAuth().getUid());
+        root = FirebaseDatabase.getInstance().getReference();
+        user = root.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         final int position = getIntent().getIntExtra("position",0);
         final String color = getIntent().getStringExtra("color");
         if(color.equals("#FF33B5E5".toLowerCase())){
@@ -111,11 +114,14 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         }
 
         user.child("Courses").addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int i = 0;
                 for(DataSnapshot course : dataSnapshot.getChildren()){
-
+                    if(android.os.Debug.isDebuggerConnected()){
+                        android.os.Debug.waitForDebugger();
+                    }
                     if(i==position){
                         Log.d(TAG,(String)course.child("CourseName").getValue());
                         String courseName = (String)course.child("CourseName").getValue();
@@ -148,9 +154,11 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Log.d(TAG, firebaseError.getMessage());
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG,databaseError.getMessage());
             }
+
+
         });
         super.onCreate(savedInstanceState);
         Log.d(TAG,"Setting views");
@@ -204,7 +212,7 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         }
 
         if (id == android.R.id.home){
-            finish();
+           finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -214,7 +222,7 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
     public void OnComplete(String value) {
 
         courseName = getSupportActionBar().getTitle().toString();// Ensure that courseName does not have default "Course Name Value
-        Firebase courseRef = new Firebase(Constants.FIREBASE_ROOT_URL).child("users").child(root.getAuth().getUid()).child("Courses").child(courseName);
+        DatabaseReference courseRef = root.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Courses").child(courseName);
         courseRef.child("color").setValue(value);
         finish();
         //TODO: Refresh Activity
@@ -269,7 +277,7 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
 
 
     public void changeColor(String color){
-        Firebase user = root.child("users").child(root.getAuth().getUid());
+        DatabaseReference user = root.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         user.child("Courses").child(courseName).child("color").setValue(color);
     }
 

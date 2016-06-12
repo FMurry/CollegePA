@@ -1,6 +1,6 @@
 package xyz.fmsoft.collegepa.Course;
 
-import com.firebase.client.Firebase;
+import com.google.firebase.database.DatabaseReference;
 
 
 import java.util.ArrayList;
@@ -327,7 +327,7 @@ public class Course implements Comparable<Course>{
     }
 
 
-    public void saveToFirebase(Firebase branch){
+    public void saveToFirebase(DatabaseReference branch){
 
         Map<String,String> infoMap = new HashMap<>();
         infoMap.put("CourseName",this.getCourseFullName());

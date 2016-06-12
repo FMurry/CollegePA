@@ -10,12 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -33,7 +31,9 @@ public class CourseDetailFragment extends Fragment {
 
     @Bind(R.id.CourseDetail_name)TextView _courseName;
     private static final String TAG = "CourseDetailFragment";
-    private Firebase user;
+    private DatabaseReference root;
+    private DatabaseReference user;
+    private FirebaseAuth firebaseAuth;
     private int position;
     private Course current;
 
@@ -60,6 +60,7 @@ public class CourseDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseAuth = FirebaseAuth.getInstance();
 
 
 
@@ -69,8 +70,9 @@ public class CourseDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_course_detail, container, false);
         ButterKnife.bind(this, v);
-        String uID = new Firebase(Constants.FIREBASE_ROOT_URL).getAuth().getUid();
-        user = new Firebase(Constants.FIREBASE_ROOT_URL).child("users").child(uID);
+        root = FirebaseDatabase.getInstance().getReference();
+        String uID = firebaseAuth.getCurrentUser().getUid();
+        user = root.child("users").child(uID);
         getActivity().getIntent().getIntExtra("position",position);
         position = getActivity().getIntent().getIntExtra("position",0);
         Log.d(TAG,"Course is at position: "+String.valueOf(position));

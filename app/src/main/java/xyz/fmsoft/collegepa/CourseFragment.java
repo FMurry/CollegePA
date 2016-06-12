@@ -17,12 +17,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.Query;
-import com.firebase.client.ValueEventListener;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +48,10 @@ public class CourseFragment extends Fragment {
     private RecyclerView.LayoutManager rvLayout;
     private RecyclerView.Adapter rvAdapter;
     private int size;
-    private AuthData user;
-    private Firebase root;
-    private Firebase userCourseBranch;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
+    private DatabaseReference root;
+    private DatabaseReference userCourseBranch;
 
 
     private static final String TAG = "CourseFragment";
@@ -77,6 +81,7 @@ public class CourseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
     @Override
@@ -84,8 +89,9 @@ public class CourseFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_course, container, false);
         ButterKnife.bind(this, v);
 
-        root = new Firebase(Constants.FIREBASE_ROOT_URL);
-        user = root.getAuth();
+        firebaseAuth = FirebaseAuth.getInstance();
+        root = FirebaseDatabase.getInstance().getReference();
+        user = firebaseAuth.getCurrentUser();
         if(user!=null) {
             userCourseBranch = root.child("users").child(user.getUid()).child("Courses");
             Query query = userCourseBranch.orderByKey();
@@ -96,7 +102,7 @@ public class CourseFragment extends Fragment {
                 }
 
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                public void onCancelled(DatabaseError firebaseError) {
 
                 }
             });
@@ -159,8 +165,8 @@ public class CourseFragment extends Fragment {
 
 
 
-    public void getFirebaseCourses(Firebase courseBranch){
-        if(root.getAuth()!=null) {
+    public void getFirebaseCourses(DatabaseReference courseBranch){
+        if(firebaseAuth.getCurrentUser()!=null) {
             courseBranch.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -168,7 +174,7 @@ public class CourseFragment extends Fragment {
                 }
 
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                public void onCancelled(DatabaseError firebaseError) {
                     Log.d(TAG, firebaseError.getMessage());
                 }
             });
@@ -176,6 +182,9 @@ public class CourseFragment extends Fragment {
     }
 
     public void saveCourse(DataSnapshot snapshot){
+        if(android.os.Debug.isDebuggerConnected()){
+            android.os.Debug.waitForDebugger();
+        }
         for(DataSnapshot child : snapshot.getChildren()){
             try {
                 String courseName = (String) child.child("CourseName").getValue(String.class);
@@ -201,9 +210,12 @@ public class CourseFragment extends Fragment {
                     courses.add(course);
                 }
             }
+            catch(NullPointerException ex){
+
+            }
             catch (Exception e){
                 //TODO: Report the error and send
-                root.unauth();
+                firebaseAuth.signOut();
 
             }
 
