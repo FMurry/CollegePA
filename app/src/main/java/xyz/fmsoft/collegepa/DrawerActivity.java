@@ -48,6 +48,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private ActionBarDrawerToggle toggle;
     private TextView userName;
     private TextView userEmail;
-    private ImageView profilePic;
+    private ImageView userPic;
     private boolean loggedIn;
     private MenuItem account_drawer;
     private Snackbar snackbarConnection;
@@ -130,6 +131,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         View headerLayout = navigationView.getHeaderView(0);
         userName = (TextView) headerLayout.findViewById(R.id.user_name);
         userEmail = (TextView) headerLayout.findViewById(R.id.user_email);
+        userPic = (ImageView) headerLayout.findViewById(R.id.user_photo);
         //profilePic = (ImageView)headerLayout.findViewById(R.id.profileImage);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem) navMenu.findItem(R.id.nav_Account);
@@ -138,68 +140,45 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
         mAuthStateListener = new FirebaseAuth.AuthStateListener(){
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() !=null){
                     final StringBuilder providers = new StringBuilder("");
                     for(String str : firebaseAuth.getCurrentUser().getProviders()){
                         providers.append(str);
                     }
                     if(providers.toString().contains("google.com")){
-                        root.child("users").child(firebaseAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
-                                userEmail.setText(dataSnapshot.child("email").getValue(String.class));
-                                if(dataSnapshot.child("provider").getValue(String.class).contains("google.com")
-                                        || dataSnapshot.child("provider").getValue(String.class).contains("facebook.com")){
-                                    //TODO If logged in with Google or Facebook replace profilePic with their profile image
-                                }
-                            }
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        userName.setText(user.getDisplayName());
+                        userEmail.setText(user.getEmail());
+                        Uri photoUri = firebaseAuth.getCurrentUser().getPhotoUrl();
+                        Picasso.with(DrawerActivity.this)
+                                .load(photoUri)
+                                .placeholder(android.R.drawable.sym_def_app_icon)
+                                .error(android.R.drawable.sym_def_app_icon)
+                                .into(userPic);
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Log.d(TAG,databaseError.getMessage());
-                            }
-                        });
+
+
+
                     }
                     else if(providers.toString().contains("facebook.com")){
                         FacebookSdk.sdkInitialize(getApplicationContext());
-                        root.child("users").child(firebaseAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
-                                userEmail.setText(dataSnapshot.child("email").getValue(String.class));
-                                if(dataSnapshot.child("provider").getValue(String.class).contains("google.com")
-                                        || dataSnapshot.child("provider").getValue(String.class).contains("facebook.com")){
-                                    //TODO If logged in with Google or Facebook replace profilePic with their profile image
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Log.d(TAG,databaseError.getMessage());
-                            }
-                        });
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        userName.setText(user.getDisplayName());
+                        userEmail.setText(user.getEmail());
+                        Uri photoUri = user.getPhotoUrl();
+                        Picasso.with(DrawerActivity.this)
+                                .load(photoUri)
+                                .placeholder(android.R.drawable.sym_def_app_icon)
+                                .error(android.R.drawable.sym_def_app_icon)
+                                .into(userPic);
                     }
                     else {
-                        root.child("users").child(firebaseAuth.getCurrentUser().getUid())
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        userName.setText(user.getDisplayName());
+                        userEmail.setText(user.getEmail());
 
-
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        userName.setText("Welcome " + dataSnapshot.child("name").getValue(String.class));
-                                        userEmail.setText(dataSnapshot.child("email").getValue(String.class));
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        Log.d(TAG, databaseError.getMessage());
-
-                                    }
-                                });
                     }
-
                 }
                 else {
                     Intent loginActivity = new Intent(getBaseContext(), LoginActivity.class);

@@ -111,8 +111,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static String ACCOUNT_PERMISSIONS[] = new String[]{
             Manifest.permission.GET_ACCOUNTS
     };
+
+    private ProgressDialog loginProgress;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference root;
+
 
 
     @Bind(R.id.login_email) AppCompatEditText email;
@@ -152,7 +155,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .requestEmail()
                 .requestIdToken(getString(R.string.google_web_client_id))
                 .build();
-
+        loginProgress = new ProgressDialog(this);
+        loginProgress.setMessage("Please wait.......");
+        loginProgress.setIndeterminate(true);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
@@ -287,10 +292,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 Log.d(TAG,"Logging in with Facebook Account");
-                final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
-                progressDialog.setMessage("Please wait......");
-                progressDialog.show();
-
+                loginProgress.setMessage("Please wait......");
+                loginProgress.show();
                 if(task.isSuccessful()){
                     AuthResult authResult = task.getResult();
                     FirebaseUser user = authResult.getUser();
@@ -309,14 +312,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     root.child("users").child(user.getUid()).child("name").setValue(name);
                     root.child("users").child(user.getUid()).child("email").setValue(email);
                     root.child("users").child(user.getUid()).child("loginDate").setValue(date);
-                    progressDialog.dismiss();
                     onLoginSuccess();
 
                 }
                 else{
                     Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, task.getException().getMessage());
-                    progressDialog.dismiss();
                     LoginManager.getInstance().logOut();
                     onLoginFailed();
                 }
@@ -353,9 +354,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         loginButton.setEnabled(true);
 
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please wait......");
-        progressDialog.show();
+        loginProgress.show();
 
         final String emailCurrent = email.getText().toString();
         final String passwordCurrent = password.getText().toString();
@@ -384,12 +383,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             root.child("users").child(uID).child("OSversion").setValue(Build.VERSION.SDK_INT);
                             root.child("users").child(uID).child("loginDate").setValue(date);
 
-                            progressDialog.dismiss();
                             onLoginSuccess();
                         }
 
                         else{
-                            progressDialog.dismiss();
                             Exception exception = task.getException();
                             Log.d(TAG,exception.getMessage());
                             Toast.makeText(LoginActivity.this, "Login Incorrect", Toast.LENGTH_LONG).show();
@@ -408,9 +405,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     public void LoginWithGoogle(){
         Log.d(TAG,"Logging in with Google Account");
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please wait......");
-        progressDialog.show();
+        loginProgress.show();
 
         final AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
 
@@ -447,12 +442,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         Log.d(TAG, e.getMessage());
                                         root.child("users").child(user.getUid()).child("photo").setValue("NA");
                                     }
-                                    progressDialog.dismiss();
                                     onLoginSuccess();
                                 }
                                 else{
                                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                                    progressDialog.dismiss();
                                     onLoginFailed();
                                 }
                             }
@@ -500,6 +493,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onLoginSuccess(){
         loginButton.setEnabled(true);
         setResult(Activity.RESULT_OK, null);
+        loginProgress.dismiss();
         startActivity(new Intent(this, DrawerActivity.class));
         finish();
     }
@@ -507,7 +501,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /**
      * User Failed to Login Do nothing
      */
-    public void onLoginFailed(){
+    public void onLoginFailed()
+    {
+        loginProgress.dismiss();
         loginButton.setEnabled(true);
     }
 
