@@ -316,7 +316,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                 }
                 else{
-                    Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     Log.d(TAG, task.getException().getMessage());
                     LoginManager.getInstance().logOut();
                     onLoginFailed();
@@ -544,6 +545,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
         else{
             email.setError(null);
+
         }
 
         return valid;
@@ -573,6 +575,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         Toast.makeText(getBaseContext(), "Check Email for Password Reset", Toast.LENGTH_SHORT).show();
                                     }
                                     else{
+                                        progressDialog.dismiss();
                                         Toast.makeText(LoginActivity.this, "User not found with email", Toast.LENGTH_SHORT).show();
 
                                     }
@@ -583,7 +586,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         }
         else{
-            Toast.makeText(this,"Please Enter Email",Toast.LENGTH_LONG).show();
             progressDialog.dismiss();
         }
     }
