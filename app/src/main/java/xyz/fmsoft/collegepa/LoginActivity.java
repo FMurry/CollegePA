@@ -294,6 +294,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 Log.d(TAG,"Logging in with Facebook Account");
                 loginProgress.setMessage("Please wait......");
                 loginProgress.show();
+                loginProgress.setCancelable(false);
                 if(task.isSuccessful()){
                     AuthResult authResult = task.getResult();
                     FirebaseUser user = authResult.getUser();
@@ -356,6 +357,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         loginButton.setEnabled(true);
 
         loginProgress.show();
+        loginProgress.setCancelable(false);
 
         final String emailCurrent = email.getText().toString();
         final String passwordCurrent = password.getText().toString();
@@ -407,6 +409,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void LoginWithGoogle(){
         Log.d(TAG,"Logging in with Google Account");
         loginProgress.show();
+        loginProgress.setCancelable(false);
 
         final AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
 
@@ -559,6 +562,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Please wait......");
         progressDialog.show();
+        progressDialog.setCancelable(false);
 
         final String currentEmail = email.getText().toString();
         if(validateForgot()){

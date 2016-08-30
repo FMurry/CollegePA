@@ -153,12 +153,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                         Uri photoUri = firebaseAuth.getCurrentUser().getPhotoUrl();
                         Picasso.with(DrawerActivity.this)
                                 .load(photoUri)
-                                .placeholder(android.R.drawable.sym_def_app_icon)
-                                .error(android.R.drawable.sym_def_app_icon)
+                                .placeholder(R.drawable.ic_account_white_48dp)
+                                .error(R.drawable.ic_account_white_48dp)
                                 .into(userPic);
-
-
-
 
                     }
                     else if(providers.toString().contains("facebook.com")){
@@ -389,6 +386,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Fetching Courses");
         progressDialog.show();
+        progressDialog.setCancelable(false);
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
