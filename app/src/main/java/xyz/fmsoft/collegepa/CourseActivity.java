@@ -3,6 +3,7 @@ package xyz.fmsoft.collegepa;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.support.annotation.IdRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +55,7 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
     @Bind(R.id.course_detail_viewpager)ViewPager _viewPager;
     @Bind(R.id.course_detail_tabs)TabLayout _tabLayout;
     @Bind(R.id.appbar)AppBarLayout _appBarLayout;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -177,6 +181,7 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         adapter.addFragment(new CourseDetailFragment(),"Course");
         //TODO: Change Title of Fragment to course name
         //TODO: Add Assignment Fragments
+        //TODO: Change from TabLayout to bottom Nav
         _viewPager.setAdapter(adapter);
 
         _tabLayout.setupWithViewPager(_viewPager);

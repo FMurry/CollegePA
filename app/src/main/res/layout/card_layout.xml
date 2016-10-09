@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
     android:layout_marginBottom="8dp"
     android:orientation="vertical">
@@ -81,14 +81,7 @@
                 android:layout_above="@id/cv_course_days"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <ImageButton
-                android:id="@+id/cv_course_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:background="#fff"
-                android:src="@drawable/ic_code_array_black_48dp" />
+
 
 
         </RelativeLayout>

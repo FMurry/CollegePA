@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -113,6 +114,11 @@ public class CourseFragment extends Fragment {
         recycler.setHasFixedSize(true);
 
         rvLayout = new LinearLayoutManager(v.getContext());
+//        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(
+//                LinearLayout.LayoutParams.WRAP_CONTENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT
+//        );
+//        recycler.setLayoutParams(layoutParams);
         recycler.setLayoutManager(rvLayout);
 
         //If there is network available find all data from cloud

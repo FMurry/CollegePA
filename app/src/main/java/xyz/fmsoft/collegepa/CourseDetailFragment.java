@@ -72,7 +72,7 @@ public class CourseDetailFragment extends Fragment {
         ButterKnife.bind(this, v);
         root = FirebaseDatabase.getInstance().getReference();
         String uID = firebaseAuth.getCurrentUser().getUid();
-        user = root.child("users").child(uID);
+        user =  root.child("users").child(uID);
         getActivity().getIntent().getIntExtra("position",position);
         position = getActivity().getIntent().getIntExtra("position",0);
         Log.d(TAG,"Course is at position: "+String.valueOf(position));

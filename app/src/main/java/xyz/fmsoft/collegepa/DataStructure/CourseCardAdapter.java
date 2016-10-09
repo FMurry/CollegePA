@@ -111,7 +111,6 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
             days = (TextView)v.findViewById(R.id.cv_course_days);
             courseType = (TextView)v.findViewById(R.id.cv_course_type);
             courseGrade = (TextView)v.findViewById(R.id.cv_grade);
-            icon = (ImageView)v.findViewById(R.id.cv_course_icon);
 
             final String name;
             final int theme;

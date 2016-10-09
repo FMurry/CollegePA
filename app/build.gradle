@@ -10,6 +10,11 @@ android {
             storePassword 'Anime0870'
         }
     }
+    dexOptions {
+        incremental = true
+        preDexLibraries = false
+        javaMaxHeapSize "4g" // 2g should be also OK
+    }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -26,6 +31,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+
 
     }
     buildTypes {
@@ -56,6 +62,8 @@ dependencies {
     compile "com.google.firebase:firebase-invites:9.4.0"
     compile 'com.google.firebase:firebase-messaging:9.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.roughike:bottom-bar:2.0.2'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
 
 
 }

@@ -103,7 +103,7 @@
     <style name="AppThemeDarkRed" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/darkred</item>
         <item name="colorPrimaryDark">@color/darkred</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/orange</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowContentTransitions">true</item>

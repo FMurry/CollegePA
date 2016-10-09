@@ -54,6 +54,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.fmsoft.collegepa.utils.FingerPrintDialog;
 
 //TODO: Get up to date with new Firebase
@@ -82,7 +83,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private ActionBarDrawerToggle toggle;
     private TextView userName;
     private TextView userEmail;
-    private ImageView userPic;
+    private CircleImageView userPic;
     private boolean loggedIn;
     private MenuItem account_drawer;
     private Snackbar snackbarConnection;
@@ -131,7 +132,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         View headerLayout = navigationView.getHeaderView(0);
         userName = (TextView) headerLayout.findViewById(R.id.user_name);
         userEmail = (TextView) headerLayout.findViewById(R.id.user_email);
-        userPic = (ImageView) headerLayout.findViewById(R.id.user_photo);
+        userPic = (CircleImageView) headerLayout.findViewById(R.id.user_photo);
         //profilePic = (ImageView)headerLayout.findViewById(R.id.profileImage);
         Menu navMenu = navigationView.getMenu();
         account_drawer = (MenuItem) navMenu.findItem(R.id.nav_Account);

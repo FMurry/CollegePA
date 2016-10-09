@@ -210,6 +210,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     public void googleLogin(){
         Log.d(TAG, "G button Pressed");
+        DisconnectGoogleAccount();
         //TODO: Ask Permission before opening account fragment
         if(ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.GET_ACCOUNTS)
                 != PackageManager.PERMISSION_GRANTED){
@@ -449,6 +450,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     onLoginSuccess();
                                 }
                                 else{
+                                    Log.d(TAG,task.getException().getMessage());
                                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                                     onLoginFailed();
                                 }
@@ -662,6 +664,24 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void setOAuthToken(String token) {
         OAuthtoken = token;
         Log.d(TAG, "OAuth Token: "+OAuthtoken);
+    }
+
+    public void DisconnectGoogleAccount(){
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                Log.d(TAG,"Google Successfully Signed out");
+            }
+        });
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Log.d(TAG,"Google Account Revoked");
+                    }
+                });
+        mGoogleApiClient.disconnect();
+        Log.d(TAG,"Goole API Client Disconnected");
     }
 }
 
