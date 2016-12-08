@@ -70,6 +70,7 @@ public class AssignmentListAdapter extends RecyclerView.Adapter<AssignmentListAd
         Assignment assignment = assignments.get(position);
         holder.itemName.setText(assignment.getName());
         holder.itemDescription.setText(assignment.getDescription());
+        holder.itemCourseName.setText(assignment.getCourseName());
 //        holder.courseName.setText(course.getCourseFullName());
 //        holder.courseID.setText(course.getCourseName());
 //        holder.courseType.setText(course.getStringType());
@@ -103,6 +104,7 @@ public class AssignmentListAdapter extends RecyclerView.Adapter<AssignmentListAd
 //        private String color;
         private TextView itemName;
         private TextView itemDescription;
+        private TextView itemCourseName;
 
 
         AssignmentViewHolder(View v){
@@ -110,7 +112,7 @@ public class AssignmentListAdapter extends RecyclerView.Adapter<AssignmentListAd
 
             itemName = (TextView)v.findViewById(R.id.assignment_name);
             itemDescription = (TextView)v.findViewById(R.id.assignment_description);
-
+            itemCourseName = (TextView)v.findViewById(R.id.assignment_course);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

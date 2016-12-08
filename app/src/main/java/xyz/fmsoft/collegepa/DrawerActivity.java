@@ -226,6 +226,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
 
         if (id == R.id.action_add_assignment) {
+            startActivity(new Intent(this,AddAssignmentActivity.class));
+            finish();
             return true;
         }
 

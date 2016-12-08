@@ -4,10 +4,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by fredericmurry on 11/26/15.
  */
-public class Assignment implements Parcelable{
+public class Assignment {
 
 
     //f
@@ -15,6 +20,7 @@ public class Assignment implements Parcelable{
     private String description;
     private String points;
     private String totalPoints;
+    private String courseName;
 
 
     public Assignment(){
@@ -22,6 +28,7 @@ public class Assignment implements Parcelable{
         description = "";
         points = "-1";
         totalPoints = "1";
+        courseName = "";
     }
 
     public Assignment(String name, String description, String totalPoints){
@@ -29,6 +36,7 @@ public class Assignment implements Parcelable{
         this.description = description;
         this.totalPoints = totalPoints;
         points = "-1.00";
+        courseName = "";
     }
 
     public Assignment(Parcel in)
@@ -58,6 +66,8 @@ public class Assignment implements Parcelable{
         return Double.parseDouble(totalPoints);
     }
 
+    public String getCourseName(){ return courseName; }
+
     /*  Mutators  */
 
     public void setName(String name){
@@ -67,6 +77,8 @@ public class Assignment implements Parcelable{
     public void setDescription(String description){
         this.description = description;
     }
+
+    public void setCourseName(String newCourseName) { this.courseName = newCourseName; }
 
     public void setPoints(String points){
         String regex = "(\\\\d+\\\\.?)+";
@@ -109,54 +121,15 @@ public class Assignment implements Parcelable{
             return "-";
     }
 
-    /**
-     * Describe the kinds of special objects contained in this Parcelable's
-     * marshalled representation.
-     *
-     * @return a bitmask indicating the set of special object types marshalled
-     * by the Parcelable.
-     */
-    @Override
-    public int describeContents() {
-        return 0;
+
+
+
+    public void saveToFirebase(DatabaseReference branch){
+
+        Map<String,String> infoMap = new HashMap<>();
+        infoMap.put("CourseName",this.getCourseName());
+        infoMap.put("AssignmentName",this.getName());
+        infoMap.put("Description", this.getDescription());
+        branch.setValue(infoMap);
     }
-
-    /**
-     * Flatten this object in to a Parcel.
-     *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[]{name,description,totalPoints,points});
-    }
-
-    public Parcelable.Creator CREATOR = new Creator<Assignment>() {
-        /**
-         * Create a new instance of the Parcelable class, instantiating it
-         * from the given Parcel whose data had previously been written by
-         * {@link Parcelable#writeToParcel Parcelable.writeToParcel()}.
-         *
-         * @param source The Parcel to read the object's data from.
-         * @return Returns a new instance of the Parcelable class.
-         */
-        @Override
-        public Assignment createFromParcel(Parcel source) {
-            return new Assignment(source);
-        }
-
-        /**
-         * Create a new array of the Parcelable class.
-         *
-         * @param size Size of the array.
-         * @return Returns an array of the Parcelable class, with every entry
-         * initialized to null.
-         */
-        @Override
-        public Assignment[] newArray(int size) {
-            return new Assignment[0];
-        }
-    };
 }

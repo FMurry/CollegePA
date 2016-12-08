@@ -19,6 +19,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
         android:layout_marginRight="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/assignment_course"
+        android:layout_below="@id/assignment_description"
+        android:layout_marginBottom="4dp"
+        android:text="Course Name Here"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/assignment_course"
+        android:background="@android:color/black"
+        android:layout_marginBottom="4dp"/>
 
 </RelativeLayout>

@@ -99,6 +99,12 @@ public class AddCourseActivity extends AppCompatActivity {
        return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this,DrawerActivity.class));
+        finish();
+    }
+
     public void addCourse(){
         String name = _courseName.getText().toString();
         String id = _courseID.getText().toString();

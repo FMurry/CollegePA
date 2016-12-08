@@ -216,8 +216,8 @@ public class AssignmentFragment extends Fragment {
 
 
         }
-        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL_LIST);
-        recycler.addItemDecoration(itemDecoration);
+//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL_LIST);
+//        recycler.addItemDecoration(itemDecoration);
         rvAdapter = new AssignmentListAdapter(assignments);
         Log.d(TAG, "Assignment size: " + assignments.size());
         recycler.setAdapter(rvAdapter);
