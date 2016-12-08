@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:isScrollContainer="false"
-    app:theme="@style/AppTheme"
-    android:background="@drawable/collegepabackground2">
+    app:theme="@style/AppTheme">
 
     <RelativeLayout
         android:id="@+id/add_course"
