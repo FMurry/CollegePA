@@ -192,8 +192,9 @@ public class AssignmentFragment extends Fragment {
             try {
                 String name = child.child("AssignmentName").getValue(String.class);
                 String course = child.child("CourseName").getValue(String.class);
-                String description = (String) child.child("Description").getValue(String.class);
+                String description = child.child("Description").getValue(String.class);
                 Assignment assignment = new Assignment(name,description,"100");
+                assignment.setCourseName(course);
                 boolean duplicate = false;
                 for(int i = 0;i<assignments.size();i++){
                     if(assignments.get(i).equals(assignment)){

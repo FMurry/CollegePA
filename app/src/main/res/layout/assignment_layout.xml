@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/assignment_description"
         android:layout_below="@id/assignment_name"
-        android:text="Description Here"/>
+        android:text="Description Here"
+        android:layout_marginBottom="10dp"/>
     <android.support.v7.widget.AppCompatCheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
