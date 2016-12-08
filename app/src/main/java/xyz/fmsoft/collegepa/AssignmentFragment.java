@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,15 +12,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link AssignmentFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AssignmentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.List;
+
+import xyz.fmsoft.collegepa.Course.Assignment;
+import xyz.fmsoft.collegepa.Course.Course;
+
+
 public class AssignmentFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,6 +39,15 @@ public class AssignmentFragment extends Fragment {
 
     private ImageView naIcon;
     private TextView noAssignments;
+
+    private List<Assignment> assignments;
+    private RecyclerView.LayoutManager rvLayout;
+    private RecyclerView.Adapter rvAdapter;
+    private int size;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
+    private DatabaseReference root;
+    private DatabaseReference userAssignmentBranch;
 
     public AssignmentFragment() {
         // Required empty public constructor
@@ -63,6 +79,28 @@ public class AssignmentFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_assignment,container,false);
         naIcon =(ImageView) v.findViewById(R.id.na_icon);
         noAssignments =(TextView)v.findViewById(R.id.tv_no_assignments);
+        firebaseAuth = FirebaseAuth.getInstance();
+        root = FirebaseDatabase.getInstance().getReference();
+        user = firebaseAuth.getCurrentUser();
+        if(user!=null) {
+            userAssignmentBranch = root.child("users").child(user.getUid()).child("Courses");
+            Query query = userAssignmentBranch.orderByKey();
+            userAssignmentBranch.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    size = (int)dataSnapshot.getChildrenCount();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError firebaseError) {
+
+                }
+            });
+            if(size != 0){
+                naIcon.setVisibility(View.GONE);
+                noAssignments.setVisibility(View.GONE);
+            }
+        }
         // Inflate the layout for this fragment
         return v;
     }
