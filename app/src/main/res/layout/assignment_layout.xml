@@ -18,6 +18,7 @@
     <android.support.v7.widget.AppCompatCheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/assignment_check"
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
@@ -30,6 +31,15 @@
         android:layout_below="@id/assignment_description"
         android:layout_marginBottom="4dp"
         android:text="Course Name Here"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/assignment_score"
+        android:text="Score"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/assignment_check"
+        android:layout_marginRight="16dp"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

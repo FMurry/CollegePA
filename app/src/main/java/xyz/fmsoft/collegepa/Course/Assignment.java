@@ -111,7 +111,7 @@ public class Assignment {
         double dPoints = Double.parseDouble(points);
         double dTotalPoints = Double.parseDouble(totalPoints);
         if(dPoints < 0){
-            return "-";
+            return "-"+"/"+dTotalPoints;
         }
         else if(dTotalPoints!=0){
 
@@ -130,6 +130,7 @@ public class Assignment {
         infoMap.put("CourseName",this.getCourseName());
         infoMap.put("AssignmentName",this.getName());
         infoMap.put("Description", this.getDescription());
+        infoMap.put("TotalPoints", String.valueOf(this.getTotalPoints()));
         branch.setValue(infoMap);
     }
 }

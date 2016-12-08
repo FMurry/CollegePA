@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -71,6 +72,7 @@ public class AssignmentListAdapter extends RecyclerView.Adapter<AssignmentListAd
         holder.itemName.setText(assignment.getName());
         holder.itemDescription.setText(assignment.getDescription());
         holder.itemCourseName.setText(assignment.getCourseName());
+        holder.itemScore.setText(assignment.generateGrade());
 //        holder.courseName.setText(course.getCourseFullName());
 //        holder.courseID.setText(course.getCourseName());
 //        holder.courseType.setText(course.getStringType());
@@ -105,6 +107,8 @@ public class AssignmentListAdapter extends RecyclerView.Adapter<AssignmentListAd
         private TextView itemName;
         private TextView itemDescription;
         private TextView itemCourseName;
+        private TextView itemScore;
+        private AppCompatCheckBox itemCheck;
 
 
         AssignmentViewHolder(View v){
@@ -113,6 +117,8 @@ public class AssignmentListAdapter extends RecyclerView.Adapter<AssignmentListAd
             itemName = (TextView)v.findViewById(R.id.assignment_name);
             itemDescription = (TextView)v.findViewById(R.id.assignment_description);
             itemCourseName = (TextView)v.findViewById(R.id.assignment_course);
+            itemScore = (TextView)v.findViewById(R.id.assignment_score);
+            itemCheck = (AppCompatCheckBox) v.findViewById(R.id.assignment_check);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

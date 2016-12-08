@@ -33,4 +33,12 @@
         android:layout_margin="10dp"
         android:spinnerMode="dropdown" />
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_assignment_totalPoints"
+        android:layout_below="@id/add_assignment_spinner"
+        android:inputType="number"
+        android:hint="Points Worth"/>
+
 </RelativeLayout>

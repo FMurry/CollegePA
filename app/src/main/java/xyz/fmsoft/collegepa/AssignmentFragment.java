@@ -193,7 +193,8 @@ public class AssignmentFragment extends Fragment {
                 String name = child.child("AssignmentName").getValue(String.class);
                 String course = child.child("CourseName").getValue(String.class);
                 String description = child.child("Description").getValue(String.class);
-                Assignment assignment = new Assignment(name,description,"100");
+                String totalPoints = child.child("TotalPoints").getValue(String.class);
+                Assignment assignment = new Assignment(name,description,totalPoints);
                 assignment.setCourseName(course);
                 boolean duplicate = false;
                 for(int i = 0;i<assignments.size();i++){

@@ -30,6 +30,7 @@ public class AddAssignmentActivity extends AppCompatActivity {
     private static final String TAG = "AddAssignmentActivity";
 
     @Bind(R.id.add_assignment_name) EditText _name;
+    @Bind(R.id.add_assignment_totalPoints)EditText _totalPoints;
     @Bind(R.id.add_assignment_description) EditText _description;
     @Bind(R.id.add_assignment_spinner) AppCompatSpinner _spinner;
     private FirebaseUser user;
@@ -104,6 +105,9 @@ public class AddAssignmentActivity extends AppCompatActivity {
         if(_description.getText().toString().isEmpty()){
             valid = false;
         }
+        if(_totalPoints.getText().toString().isEmpty()){
+            valid = false;
+        }
 
         return valid;
     }
@@ -114,7 +118,8 @@ public class AddAssignmentActivity extends AppCompatActivity {
             String name = _name.getText().toString();
             String description = _description.getText().toString();
             String courseName = _spinner.getSelectedItem().toString();
-            Assignment assignment = new Assignment(name,description,"100");
+            String totalPoints = _totalPoints.getText().toString();
+            Assignment assignment = new Assignment(name,description, totalPoints);
             assignment.setCourseName(courseName);
             DatabaseReference assignmentBranch = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("Assignments").child(name);
             assignment.saveToFirebase(assignmentBranch);
