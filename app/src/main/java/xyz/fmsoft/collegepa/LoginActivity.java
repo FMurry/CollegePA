@@ -249,7 +249,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
         else{
             int errorCode = googleSignInResult.getStatus().getStatusCode();
-            Log.d(TAG,"Google Error Code "+errorCode);
+            Log.e(TAG,"Google Error Code "+errorCode);
             Snackbar snackbar = Snackbar.make(_linearlayout,"Sign in Failed with code "+errorCode,Snackbar.LENGTH_LONG);
         }
     }
@@ -615,47 +615,47 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /**
      * Gets the OAuth Token for account and sets it
      */
-    public void getGoogleOAuthTokenAndLogin(){
-        if(android.os.Debug.isDebuggerConnected()){
-            android.os.Debug.waitForDebugger();
-        }
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-
-                String token = null;
-                try{
-                    String scope = String.format("oauth2:%s", Scopes.PLUS_LOGIN);
-                    token = GoogleAuthUtil.getToken(getApplicationContext(), Plus.AccountApi.getAccountName(mGoogleApiClient),scope);
-                }catch (UserRecoverableAuthException e){
-                    Log.d(TAG,"UserRecoverableAuthException :"+e.getMessage());
-                    if(mGoogleApiClient.hasConnectedApi(Plus.API)) {
-                        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                        startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
-                    }
-                    else{
-                        mGoogleApiClient.connect();
-                    }
-                } catch (GoogleAuthException e) {
-                    //TODO Request Permission
-                    Log.d(TAG,"GoogleAuthException: "+e.getMessage());
-
-                }
-                catch (IOException e) {
-                    Log.d(TAG,"IOException: "+e.getMessage());
-                }
-                return token;
-            }
-            @Override
-            protected void onPostExecute(String token) {
-                if (token != null) {
-                    setOAuthToken(token);
-                    LoginWithGoogle();
-                }
-            }
-        };
-        task.execute();
-        }
+//    public void getGoogleOAuthTokenAndLogin(){
+//        if(android.os.Debug.isDebuggerConnected()){
+//            android.os.Debug.waitForDebugger();
+//        }
+//        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+//            @Override
+//            protected String doInBackground(Void... params) {
+//
+//                String token = null;
+//                try{
+//                    String scope = String.format("oauth2:%s", Scopes.PLUS_LOGIN);
+//                    token = GoogleAuthUtil.getToken(getApplicationContext(), Plus.AccountApi.getAccountName(mGoogleApiClient),scope);
+//                }catch (UserRecoverableAuthException e){
+//                    Log.d(TAG,"UserRecoverableAuthException :"+e.getMessage());
+//                    if(mGoogleApiClient.hasConnectedApi(Plus.API)) {
+//                        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+//                        startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGNIN);
+//                    }
+//                    else{
+//                        mGoogleApiClient.connect();
+//                    }
+//                } catch (GoogleAuthException e) {
+//                    //TODO Request Permission
+//                    Log.d(TAG,"GoogleAuthException: "+e.getMessage());
+//
+//                }
+//                catch (IOException e) {
+//                    Log.d(TAG,"IOException: "+e.getMessage());
+//                }
+//                return token;
+//            }
+//            @Override
+//            protected void onPostExecute(String token) {
+//                if (token != null) {
+//                    setOAuthToken(token);
+//                    LoginWithGoogle();
+//                }
+//            }
+//        };
+//        task.execute();
+//        }
 
     /**
      * Mutator for OAuthtoken
