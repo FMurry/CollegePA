@@ -27,8 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabSelectListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,14 +177,13 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         }
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new CourseDetailFragment(),"Course");
-        //TODO: Change Title of Fragment to course name
         //TODO: Add Assignment Fragments
-        //TODO: Change from TabLayout to bottom Nav
+        //adapter.addFragment(new AssignmentDetailFragment(),"Assignments");
         _viewPager.setAdapter(adapter);
         int type = getIntent().getIntExtra("type",0);
-        if(type!=0){
-            _viewPager.setCurrentItem(1);
-        }
+//        if(type!=0){
+//            _viewPager.setCurrentItem(1);
+//        }
 
         _tabLayout.setupWithViewPager(_viewPager);
 
