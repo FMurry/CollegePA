@@ -183,6 +183,10 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         //TODO: Add Assignment Fragments
         //TODO: Change from TabLayout to bottom Nav
         _viewPager.setAdapter(adapter);
+        int type = getIntent().getIntExtra("type",0);
+        if(type!=0){
+            _viewPager.setCurrentItem(1);
+        }
 
         _tabLayout.setupWithViewPager(_viewPager);
 

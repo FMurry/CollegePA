@@ -23,7 +23,7 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion '24'
     defaultConfig {
         applicationId "xyz.fmsoft.collegepa"
         minSdkVersion 19

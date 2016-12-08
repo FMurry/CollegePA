@@ -33,7 +33,6 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
 
     private List<Course> courses;
 
-
     public CourseCardAdapter(List<Course> list){
         courses = list;
     }
@@ -125,6 +124,7 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
                 public void onClick(View v) {
                     int pos = getAdapterPosition();
                     Intent courseIntent = new Intent(v.getContext(),CourseActivity.class);
+                    courseIntent.putExtra("type",0);
                     courseIntent.putExtra("position", pos);
                     courseIntent.putExtra("name",name);
                     courseIntent.putExtra("color",color);

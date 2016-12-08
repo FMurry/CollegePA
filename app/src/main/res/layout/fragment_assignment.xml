@@ -1,5 +1,6 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/assignment_swipe_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="xyz.fmsoft.collegepa.AssignmentFragment">
@@ -8,6 +9,7 @@
         android:id="@+id/recycler_view_assignments"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
     </android.support.v7.widget.RecyclerView>
 
@@ -28,4 +30,4 @@
         android:layout_gravity="center_horizontal|top"
         android:src="@drawable/ic_note_text_grey600_48dp" />
 
-</FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
