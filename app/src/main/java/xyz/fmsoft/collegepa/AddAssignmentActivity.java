@@ -1,14 +1,18 @@
 package xyz.fmsoft.collegepa;
 
 import android.content.Intent;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatSpinner;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,21 +28,29 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import xyz.fmsoft.collegepa.Course.Assignment;
+import xyz.fmsoft.collegepa.utils.DatePickerFragment;
+import xyz.fmsoft.collegepa.utils.TimePickerFragment;
 
-public class AddAssignmentActivity extends AppCompatActivity {
+public class AddAssignmentActivity extends AppCompatActivity implements DatePickerFragment.DateListener, TimePickerFragment.TimeListener{
 
     private static final String TAG = "AddAssignmentActivity";
 
     @Bind(R.id.add_assignment_name) EditText _name;
     @Bind(R.id.add_assignment_totalPoints)EditText _totalPoints;
     @Bind(R.id.add_assignment_description) EditText _description;
+    @Bind(R.id.add_assignment_date)AppCompatButton _date;
     @Bind(R.id.add_assignment_spinner) AppCompatSpinner _spinner;
+    @Bind(R.id.add_assignment_date_text)TextView _dateText;
+    @Bind(R.id.add_assignment_time)AppCompatButton _time;
+    @Bind(R.id.add_assignment_time_text)TextView _timeText;
+
     private FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_assignment);
         ButterKnife.bind(this);
+        //Setting up Spinner
         user = FirebaseAuth.getInstance().getCurrentUser();
         final ArrayList<String> items = new ArrayList<>();
         if(user!=null) {
@@ -62,6 +74,23 @@ public class AddAssignmentActivity extends AppCompatActivity {
                 }
             });
         }
+        //End Setting up spinner
+        //Setting up Date Fragment
+        _date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker(v);
+            }
+        });
+        //End Setting up Date Fragment
+        //Setting up Time Fragment
+        _time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePicker(v);
+            }
+        });
+
 
     }
 
@@ -131,5 +160,25 @@ public class AddAssignmentActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    public void showDatePicker(View v){
+        DialogFragment dialogFragment = new DatePickerFragment();
+        dialogFragment.show(getSupportFragmentManager(),"datePicker");
+    }
+
+    public void showTimePicker(View v){
+        DialogFragment dialogFragment = new TimePickerFragment();
+        dialogFragment.show(getSupportFragmentManager(),"timePicker");
+    }
+
+    @Override
+    public void returnFormattedDate(String date) {
+        _dateText.setText(date);
+    }
+
+    @Override
+    public void returnFormattedTime(String time) {
+        _timeText.setText(time);
     }
 }
