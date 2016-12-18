@@ -126,6 +126,10 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
         finish();
     }
 
+    /**
+     * Validates if user entered required information
+     * @return valid - whether submission is valid or not
+     */
     public boolean isValid(){
         boolean valid = true;
         if(_name.getText().toString().isEmpty()){
@@ -141,6 +145,9 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
         return valid;
     }
 
+    /**
+     * Adds an assignment to Firebase database
+     */
     public void addAssignment(){
 
         if(isValid()){
@@ -162,21 +169,37 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
 
     }
 
+    /**
+     * Shows the date picker fragment
+     * @param v
+     */
     public void showDatePicker(View v){
         DialogFragment dialogFragment = new DatePickerFragment();
         dialogFragment.show(getSupportFragmentManager(),"datePicker");
     }
 
+    /**
+     * Shows the time picker fragment
+     * @param v
+     */
     public void showTimePicker(View v){
         DialogFragment dialogFragment = new TimePickerFragment();
         dialogFragment.show(getSupportFragmentManager(),"timePicker");
     }
 
+    /**
+     * Returns the formatted date in the form yyyy:MM:dd
+     * @param date
+     */
     @Override
     public void returnFormattedDate(String date) {
         _dateText.setText(date);
     }
 
+    /**
+     * Returns formatted time in the form HH:MM
+     * @param time
+     */
     @Override
     public void returnFormattedTime(String time) {
         _timeText.setText(time);

@@ -23,6 +23,9 @@ public class Assignment {
     private String courseName;
 
 
+    /**
+     * Default Constructor
+     */
     public Assignment(){
         name = "";
         description = "";
@@ -31,6 +34,12 @@ public class Assignment {
         courseName = "";
     }
 
+    /**
+     * Constructor
+     * @param name the name of assignment
+     * @param description the description of assignment
+     * @param totalPoints
+     */
     public Assignment(String name, String description, String totalPoints){
         this.name = name;
         this.description = description;
