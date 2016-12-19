@@ -81,6 +81,15 @@
                 android:layout_above="@id/cv_course_days"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
+            <TextView
+                android:id="@+id/cv_course_time"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/cv_grade"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"/>
+
 
 
 

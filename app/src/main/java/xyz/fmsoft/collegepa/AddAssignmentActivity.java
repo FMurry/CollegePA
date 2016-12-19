@@ -166,6 +166,12 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
             _time.setError(null);
         }
 
+        if(_spinner.getSelectedItem() == null){
+            valid = false;
+            Toast.makeText(this, "No Course Selected", Toast.LENGTH_SHORT).show();
+        }
+
+
         return valid;
     }
 
@@ -188,10 +194,6 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
             startActivity(new Intent(this,DrawerActivity.class));
             finish();
         }
-        else{
-            Toast.makeText(this, "Please fill out name and description", Toast.LENGTH_SHORT).show();
-        }
-
 
     }
 

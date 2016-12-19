@@ -75,6 +75,7 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
         holder.courseRoom.setText(course.getRoom());
         holder.color = course.getColorID();
         holder.courseName.setBackgroundColor(Color.parseColor(holder.color));
+        holder.courseTime.setText(course.getStartTime()+"-"+course.getEndTime());
 
     }
 
@@ -98,6 +99,7 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
         private TextView courseRoom;
         private ImageView icon;
         private String color;
+        private TextView courseTime;
 
         CourseViewHolder(View v){
             super(v);
@@ -110,6 +112,7 @@ public class CourseCardAdapter extends RecyclerView.Adapter<CourseCardAdapter.Co
             days = (TextView)v.findViewById(R.id.cv_course_days);
             courseType = (TextView)v.findViewById(R.id.cv_course_type);
             courseGrade = (TextView)v.findViewById(R.id.cv_grade);
+            courseTime = (TextView)v.findViewById(R.id.cv_course_time);
 
             final String name;
             final int theme;

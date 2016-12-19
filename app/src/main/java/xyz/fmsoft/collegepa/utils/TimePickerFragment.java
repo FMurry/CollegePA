@@ -49,7 +49,13 @@ public class TimePickerFragment extends AppCompatDialogFragment implements TimeP
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        String time = hourOfDay+":"+minute;
+        String time;
+        if(minute < 10){
+            time = hourOfDay+":0"+minute;
+        }
+        else {
+            time = hourOfDay + ":" + minute;
+        }
         Log.d(TAG, tag);
         if (listener != null){
             listener.returnFormattedTime(time, tag);

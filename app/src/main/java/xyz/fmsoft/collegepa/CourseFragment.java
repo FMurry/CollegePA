@@ -138,6 +138,17 @@ public class CourseFragment extends Fragment {
             }
         });
 
+        if(size == 0){
+            Log.d(TAG, "No Courses Message Visible");
+            noCourses.setVisibility(View.VISIBLE);
+            ncIcon.setVisibility(View.VISIBLE);
+        }
+        else{
+            Log.d(TAG, "No Courses Message Gone");
+            noCourses.setVisibility(View.GONE);
+            ncIcon.setVisibility(View.GONE);
+        }
+
         return v;
     }
 
@@ -229,6 +240,7 @@ public class CourseFragment extends Fragment {
         }
         rvAdapter = new CourseCardAdapter(courses);
         Log.d(TAG, "course size: " + courses.size());
+
         recycler.setAdapter(rvAdapter);
         Log.d(TAG, "Adapter Set");
     }

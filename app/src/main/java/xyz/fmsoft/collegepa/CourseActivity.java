@@ -137,23 +137,29 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
                         String room = (String)course.child("Room").getValue();
                         String type = (String) course.child("Type").getValue();
                         current = new Course(courseID,courseName,type);
-                        boolean sunday = (boolean)course.child("Sunday").getValue();
-                        boolean monday = (boolean)course.child("Monday").getValue();
-                        boolean tuesday = (boolean)course.child("Tuesday").getValue();
-                        boolean wednesday = (boolean)course.child("Wednesday").getValue();
-                        boolean thursday = (boolean)course.child("Thursday").getValue();
-                        boolean friday = (boolean)course.child("Friday").getValue();
-                        boolean saturday = (boolean)course.child("Saturday").getValue();
+                        try {
+                            boolean sunday = (boolean) course.child("Sunday").getValue();
+                            boolean monday = (boolean) course.child("Monday").getValue();
+                            boolean tuesday = (boolean) course.child("Tuesday").getValue();
+                            boolean wednesday = (boolean) course.child("Wednesday").getValue();
+                            boolean thursday = (boolean) course.child("Thursday").getValue();
+                            boolean friday = (boolean) course.child("Friday").getValue();
+                            boolean saturday = (boolean) course.child("Saturday").getValue();
+                            current.setSunday(sunday);
+                            current.setMonday(monday);
+                            current.setTuesday(tuesday);
+                            current.setWednesday(wednesday);
+                            current.setThursday(thursday);
+                            current.setFriday(friday);
+                            current.setSaturday(saturday);
+                        }catch (NullPointerException ex){
+                            startActivity(new Intent(getBaseContext(),DrawerActivity.class));
+                            finish();
+                        }
                         //getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(current.getColorID())));
                         // _tabLayout.setBackgroundColor(Color.parseColor(current.getColorID()));
                         //_appBarLayout.setBackgroundColor(Color.parseColor(current.getColorID()));
-                        current.setSunday(sunday);
-                        current.setMonday(monday);
-                        current.setTuesday(tuesday);
-                        current.setWednesday(wednesday);
-                        current.setThursday(thursday);
-                        current.setFriday(friday);
-                        current.setSaturday(saturday);
+
                     }
                     i++;
                 }
@@ -238,7 +244,12 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         courseName = getSupportActionBar().getTitle().toString();// Ensure that courseName does not have default "Course Name Value
         DatabaseReference courseRef = root.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Courses").child(courseName);
         courseRef.child("color").setValue(value);
-        Intent refresh = new Intent(this, DrawerActivity.class);
+        final int position = getIntent().getIntExtra("position",0);
+        Intent refresh = new Intent(this, CourseActivity.class);
+        refresh.putExtra("position",position);
+        refresh.putExtra("color", value);
+        refresh.putExtra("name",getIntent().getStringExtra("name"));
+        refresh.putExtra("type",0);
         refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(refresh);
         finish();
