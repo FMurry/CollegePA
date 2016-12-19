@@ -11,7 +11,28 @@ Alternatively you can just run the app from android studio. Beware that doing th
 
 <h1>How to Use</h1>
 <br>
-When you first boo the application you will be at the login screen. Here you have 3 login types, FaceBook, Google, and email/password. A week after grades are turned in I will purge all accounts so don't worry about me keeping data for any of these authentication methods.
+<ul>
+	<li>
+		When you first boot the application you will be at the login screen. Here you have 3 login types, FaceBook, Google, and email/password. A week after grades are turned in I will purge all accounts so don't worry about me keeping data for any of these authentication methods. If you want to sign up through email and password touch "First Time? Please Sign Up" and fill out the information
+	</li>
+	<li>
+		After you login you will see a blank page with the title <b>Courses</b>. From here you can hit the 3 dots icon at the top right and select add course. Fill out the information and you will see that a course has been added. The emphasis on this project is cloud storage so I recommend you test on multiple emulators. You can also refresh the page by swiping down from top to bottom (If you make changes live from another emulator you may need to swipe). Once you add the course you can touch it. This will bring you to a new activity. This activity is not populated yet but from the options icon at top right you can change the courses color and or delete the course. With the button at the top left you can navigate to different places. Lets start with adding an assignment 
+	</li>
+	<li>
+		Select assignments in navigation menu. There is not much fuctionality here but you can add an assignment for a specific course. At the top right click the button and add an assignment. Once you finish navigate back to assignment and you will see the assignment in that menu.
+	</li>
+	<li>
+		Grades has no fuctionality yet
+	</li>
+	<li>
+		Account displays your email address. Canvas button is at bottom but has no fuctionality
+	</li>
+	<li>About has information about the app</li>
+	<li>Settings has no fuctionality</li>
+	<li>Contact us allows user to send bugs and comments through email. Assuming your emulator has an email app</li>
+	<li>Logout logs you out of the application</li>
+</ul>
+
 
 
 <h1>Goal of this Project</h1>
@@ -25,6 +46,9 @@ The goal of this project is to test out google's firebase api and to store data 
 	Use the drive api so user can store notes, photos with their classes
 	</li>
 </ul>
+
+<h1>Screenshots</h1>
+<br>
 ![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/AppIcon.png)
 <br>
 Login Page:

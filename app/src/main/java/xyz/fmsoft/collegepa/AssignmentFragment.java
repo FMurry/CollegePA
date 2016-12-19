@@ -170,15 +170,26 @@ public class AssignmentFragment extends Fragment {
 
     public void getFirebaseAssignments(DatabaseReference assignmentBranch){
         if(firebaseAuth.getCurrentUser()!=null) {
-            assignmentBranch.addValueEventListener(new ValueEventListener() {
+//            assignmentBranch.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    saveAssignment(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError firebaseError) {
+//                    Log.d(TAG, firebaseError.getMessage());
+//                }
+//            });
+            assignmentBranch.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     saveAssignment(dataSnapshot);
                 }
 
                 @Override
-                public void onCancelled(DatabaseError firebaseError) {
-                    Log.d(TAG, firebaseError.getMessage());
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(TAG, databaseError.getMessage());
                 }
             });
         }

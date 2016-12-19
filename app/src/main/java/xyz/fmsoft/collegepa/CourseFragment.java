@@ -184,15 +184,26 @@ public class CourseFragment extends Fragment {
 
     public void getFirebaseCourses(DatabaseReference courseBranch){
         if(firebaseAuth.getCurrentUser()!=null) {
-            courseBranch.addValueEventListener(new ValueEventListener() {
+//            courseBranch.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    saveCourse(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError firebaseError) {
+//                    Log.d(TAG, firebaseError.getMessage());
+//                }
+//            });
+            courseBranch.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     saveCourse(dataSnapshot);
                 }
 
                 @Override
-                public void onCancelled(DatabaseError firebaseError) {
-                    Log.d(TAG, firebaseError.getMessage());
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(TAG, databaseError.getMessage());
                 }
             });
         }
