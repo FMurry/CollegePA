@@ -37,7 +37,8 @@ Alternatively you can just run the app from android studio. Beware that doing th
 
 <h1>Goal of this Project</h1>
 <br>
-The goal of this project is to test out google's firebase api and to store data in the cloud rather than on the device itself (App will save data offline to!). I wanted to make a simple app that can keep track of your assignments with (Mainly for classes that don't use canvas, I have a few of them). Some possibilities(not yet implemented features) I see with this app are:
+The goal of this project is to test out google's firebase api and to store data in the cloud rather than on the device itself (App will save data offline to!). I wanted to make a simple app that can keep track of your assignments with (Mainly for classes that don't use canvas, I have a few of them).
+<h1>Ideas that didn't make it into project</h1>
 <ul>
 	<li>
 	Using the app alongside canvas with canvas API. Student logs in with canvas and their classes are populated automatically
