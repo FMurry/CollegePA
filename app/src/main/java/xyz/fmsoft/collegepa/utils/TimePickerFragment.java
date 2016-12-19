@@ -3,6 +3,7 @@ package xyz.fmsoft.collegepa.utils;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.widget.TimePicker;
@@ -18,9 +19,10 @@ public class TimePickerFragment extends AppCompatDialogFragment implements TimeP
 
 
     private static final String TAG = "TimePickerFragment";
+    private String tag;
 
     public interface TimeListener{
-        void returnFormattedTime(String time);
+        void returnFormattedTime(String time, String tag);
     }
 
     @Override
@@ -29,9 +31,12 @@ public class TimePickerFragment extends AppCompatDialogFragment implements TimeP
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
         listener = (TimeListener)getActivity();
-
-        return  new TimePickerDialog(getActivity(),this,hour,minute,true);
+        Bundle bundle = getArguments();
+        tag = bundle.getString("from");
+        return  new TimePickerDialog(getActivity(),this,hour,minute,false);
     }
+
+
 
     private TimeListener listener;
     /**
@@ -44,11 +49,10 @@ public class TimePickerFragment extends AppCompatDialogFragment implements TimeP
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
         String time = hourOfDay+":"+minute;
-        Log.d(TAG, time);
+        Log.d(TAG, tag);
         if (listener != null){
-            listener.returnFormattedTime(time);
+            listener.returnFormattedTime(time, tag);
         }
 
     }

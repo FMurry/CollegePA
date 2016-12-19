@@ -103,6 +103,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/add_course_radio_group2"
             android:layout_below="@id/add_course_daystext"
             android:layout_marginLeft="16dp"
             android:layout_toEndOf="@id/add_course_radio_group1"
@@ -131,6 +132,30 @@
                 android:layout_margin="4dp"
                 android:text="Sunday"
                 android:textColor="@color/colorAccent" />
+
+
         </LinearLayout>
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFF"
+            android:layout_below="@id/add_course_radio_group1"
+            android:background="@color/darkgreen"
+            android:id="@+id/add_course_start_time"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Start Time"/>
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFF"
+            android:layout_below="@id/add_course_radio_group1"
+            android:layout_toEndOf="@id/add_course_start_time"
+            android:background="@color/darkgreen"
+            android:id="@+id/add_course_end_time"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="End Time"/>
+
     </RelativeLayout>
 </ScrollView>

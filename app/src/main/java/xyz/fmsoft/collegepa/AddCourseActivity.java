@@ -1,12 +1,15 @@
 package xyz.fmsoft.collegepa;
 
 import android.content.Intent;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
 import android.text.InputFilter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -22,8 +25,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import xyz.fmsoft.collegepa.Course.Course;
 import xyz.fmsoft.collegepa.utils.Constants;
+import xyz.fmsoft.collegepa.utils.TimePickerFragment;
 
-public class AddCourseActivity extends AppCompatActivity {
+public class AddCourseActivity extends AppCompatActivity implements TimePickerFragment.TimeListener{
 
     //TODO: REDO UI FOR ADD ACTIVITY
 
@@ -39,7 +43,8 @@ public class AddCourseActivity extends AppCompatActivity {
     @Bind(R.id.add_course_friday)CheckBox _friday;
     @Bind(R.id.add_course_saturday)CheckBox _saturday;
     @Bind(R.id.add_course_sunday)CheckBox _sunday;
-
+    @Bind(R.id.add_course_start_time)AppCompatButton _startTime;
+    @Bind(R.id.add_course_end_time)AppCompatButton _endTime;
     private static final String TAG = "AddCourseActivity";
 
     private FirebaseUser user;
@@ -68,6 +73,18 @@ public class AddCourseActivity extends AppCompatActivity {
         this.setTitle("Add a Course");
 
         _courseID.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        _startTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePicker(v);
+            }
+        });
+        _endTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePicker(v);
+            }
+        });
 
 
     }
@@ -133,6 +150,14 @@ public class AddCourseActivity extends AppCompatActivity {
         else if(_courseRoom.getText().toString().isEmpty()){
             Toast.makeText(getBaseContext(), "Please Enter Room Number", Toast.LENGTH_SHORT).show();
         }
+        //Start time entered but not end time
+        else if(_startTime.getText().toString().toLowerCase().equals("start time") && !(_endTime.getText().toString().toLowerCase().equals("end time"))){
+            Toast.makeText(this, "Must have end time with start time", Toast.LENGTH_SHORT).show();
+        }
+        //End Time entered but not start time
+        else if(!(_startTime.getText().toString().toLowerCase().equals("start time")) && _endTime.getText().toString().toLowerCase().equals("end time")){
+            Toast.makeText(this, "Must have start time with end time", Toast.LENGTH_SHORT).show();
+        }
 
         else{
             Course course = new Course(id,name,type);
@@ -145,6 +170,12 @@ public class AddCourseActivity extends AppCompatActivity {
             course.setFriday(_friday.isChecked());
             course.setSaturday(_saturday.isChecked());
             course.setColorID(getResources().getString(0+R.color.colorPrimary));
+            if(!(_startTime.getText().toString().toLowerCase().equals("start time"))){
+                course.setStartTime(_startTime.getText().toString());
+            }
+            if(!(_endTime.getText().toString().toLowerCase().equals("end time"))){
+                course.setEndTime(_endTime.getText().toString());
+            }
             DatabaseReference courseBranch = userBranch.child("Courses").child(name);
             course.saveToFirebase(courseBranch);
             startActivity(new Intent(this,DrawerActivity.class));
@@ -153,4 +184,32 @@ public class AddCourseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Shows the time picker fragment
+     * @param v
+     */
+    public void showTimePicker(View v){
+        DialogFragment dialogFragment = new TimePickerFragment();
+        Bundle bundle = new Bundle();
+        if(v.getId() == R.id.add_course_start_time){
+            bundle.putString("from","start");
+        }
+        else{
+            bundle.putString("from","end");
+        }
+
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(getSupportFragmentManager(),"timePicker");
+
+    }
+
+    @Override
+    public void returnFormattedTime(String time, String tag) {
+        if(tag.equals("start")){
+            _startTime.setText(time);
+        }
+        else{
+            _endTime.setText(time);
+        }
+    }
 }

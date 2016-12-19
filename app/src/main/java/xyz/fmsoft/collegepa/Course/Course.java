@@ -23,6 +23,8 @@ public class Course implements Comparable<Course>{
     private boolean[] days;
     private String colorID;
     private ArrayList<Assignment> assignments;
+    private String startTime;
+    private String endTime;
 
     private static final String TAG = "COURSE";
 
@@ -59,6 +61,8 @@ public class Course implements Comparable<Course>{
         for(int i = 0;i<days.length;i++){
             days[i] = false;
         }
+        startTime = "";
+        endTime = "";
     }
     public Course(String courseName, String courseFullName, String type, Professor professor){
         this.id = id;
@@ -75,6 +79,8 @@ public class Course implements Comparable<Course>{
         grade = "-1";
         this.professor = professor;
         assignments = new ArrayList<>();
+        startTime = "";
+        endTime = "";
     }
 
     public Course(int id, String courseFullName,String courseName, String type){
@@ -162,6 +168,10 @@ public class Course implements Comparable<Course>{
     public String getRoom(){
         return  room;
     }
+
+    public String getStartTime() { return startTime; }
+    public String getEndTime() { return endTime; }
+
     /*         Mutators              */
     public void setCourseName(String courseName){
         this.courseName = courseName;
@@ -209,6 +219,14 @@ public class Course implements Comparable<Course>{
 
     public void setSaturday(boolean toggle){
         days[6] = toggle;
+    }
+
+    public void setStartTime(String start){
+        startTime = start;
+    }
+
+    public void setEndTime(String end){
+        endTime = end;
     }
 
 
@@ -334,6 +352,8 @@ public class Course implements Comparable<Course>{
         infoMap.put("CourseID",this.getCourseName());
         infoMap.put("Type", this.getType());
         infoMap.put("Room",this.getRoom());
+        infoMap.put("StartTime", this.getStartTime());
+        infoMap.put("EndTime", this.getEndTime());
         branch.setValue(infoMap);
         branch.child("Sunday").setValue(days[0]);
         branch.child("Monday").setValue(days[1]);

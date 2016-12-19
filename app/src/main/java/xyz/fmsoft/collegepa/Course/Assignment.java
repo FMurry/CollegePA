@@ -21,6 +21,8 @@ public class Assignment {
     private String points;
     private String totalPoints;
     private String courseName;
+    private String dueDate;
+    private String dueTime;
 
 
     /**
@@ -77,6 +79,10 @@ public class Assignment {
 
     public String getCourseName(){ return courseName; }
 
+    public String getDueDate() {return dueDate; }
+
+    public String getDueTime(){ return dueTime; }
+
     /*  Mutators  */
 
     public void setName(String name){
@@ -109,6 +115,13 @@ public class Assignment {
         }
     }
 
+    public void setDueTime(String dueTime){
+        this.dueTime = dueTime;
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = dueDate;
+    }
 
     /*   Method Name   */
 
@@ -140,6 +153,8 @@ public class Assignment {
         infoMap.put("AssignmentName",this.getName());
         infoMap.put("Description", this.getDescription());
         infoMap.put("TotalPoints", String.valueOf(this.getTotalPoints()));
+        infoMap.put("DueDate", this.getDueDate());
+        infoMap.put("DueTime", this.getDueTime());
         branch.setValue(infoMap);
     }
 }

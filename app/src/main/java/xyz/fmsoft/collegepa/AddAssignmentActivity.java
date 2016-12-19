@@ -40,9 +40,7 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
     @Bind(R.id.add_assignment_description) EditText _description;
     @Bind(R.id.add_assignment_date)AppCompatButton _date;
     @Bind(R.id.add_assignment_spinner) AppCompatSpinner _spinner;
-    @Bind(R.id.add_assignment_date_text)TextView _dateText;
     @Bind(R.id.add_assignment_time)AppCompatButton _time;
-    @Bind(R.id.add_assignment_time_text)TextView _timeText;
 
     private FirebaseUser user;
     @Override
@@ -134,12 +132,38 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
         boolean valid = true;
         if(_name.getText().toString().isEmpty()){
             valid = false;
+            _name.setError("Please Enter Name");
+        }
+        else{
+            _name.setError(null);
         }
         if(_description.getText().toString().isEmpty()){
             valid = false;
+            _description.setError("Please Enter Description");
+        }
+        else{
+            _description.setError(null);
         }
         if(_totalPoints.getText().toString().isEmpty()){
             valid = false;
+            _totalPoints.setError("Please Enter points assignment is worth");
+        }
+        else{
+            _totalPoints.setError(null);
+        }
+        if(_date.getText().toString().toLowerCase().equals("due date")){
+            valid = false;
+            _date.setError("Select a Due date");
+        }
+        else{
+            _date.setError(null);
+        }
+        if(_time.getText().toString().toLowerCase().equals("due time")){
+            valid = false;
+            _time.setError("Select a due time");
+        }
+        else{
+            _time.setError(null);
         }
 
         return valid;
@@ -157,6 +181,8 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
             String totalPoints = _totalPoints.getText().toString();
             Assignment assignment = new Assignment(name,description, totalPoints);
             assignment.setCourseName(courseName);
+            assignment.setDueDate(_date.getText().toString());
+            assignment.setDueTime(_time.getText().toString());
             DatabaseReference assignmentBranch = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("Assignments").child(name);
             assignment.saveToFirebase(assignmentBranch);
             startActivity(new Intent(this,DrawerActivity.class));
@@ -184,6 +210,9 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
      */
     public void showTimePicker(View v){
         DialogFragment dialogFragment = new TimePickerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("from","start");
+        dialogFragment.setArguments(bundle);
         dialogFragment.show(getSupportFragmentManager(),"timePicker");
     }
 
@@ -192,16 +221,12 @@ public class AddAssignmentActivity extends AppCompatActivity implements DatePick
      * @param date
      */
     @Override
-    public void returnFormattedDate(String date) {
-        _dateText.setText(date);
-    }
+    public void returnFormattedDate(String date) {_date.setText(date);}
 
     /**
      * Returns formatted time in the form HH:MM
      * @param time
      */
     @Override
-    public void returnFormattedTime(String time) {
-        _timeText.setText(time);
-    }
+    public void returnFormattedTime(String time, String tag) {_time.setText(time);}
 }
