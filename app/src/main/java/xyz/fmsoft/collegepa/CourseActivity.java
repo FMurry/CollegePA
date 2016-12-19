@@ -1,11 +1,13 @@
 package xyz.fmsoft.collegepa;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.IdRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -216,6 +218,23 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
             colorPickerDialog.show(fragmentManager, "Colorpickerdialog");
             //TODO: call changeColor();
         }
+        else if(id == R.id.action_delete){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
+            builder.setMessage("Are You Sure?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteDialog(true);
+                    dialog.dismiss();
+                }
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).show();
+
+
+        }
 
         if (id == android.R.id.home){
            finish();
@@ -287,6 +306,16 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         user.child("Courses").child(courseName).child("color").setValue(color);
     }
 
+    public void deleteDialog(boolean delete){
+
+        if(delete){
+            //Delete The Course
+
+        }
+        else{
+            //Do nothing
+        }
+    }
 
 
 }
