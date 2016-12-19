@@ -17,5 +17,5 @@
         android:id="@+id/action_delete"
         android:orderInCategory="300"
         android:title="Delete"
-        app:showAsSction="never"/>
+        app:showAsAction="never"/>
 </menu>

@@ -306,7 +306,7 @@ public class ColorPickerDialog extends AppCompatDialogFragment{
         dismiss();
     }
 
-    public static interface OnCompleteListener {
-        public abstract void OnComplete(String value);
+    public interface OnCompleteListener {
+         void OnComplete(String value);
     }
 }

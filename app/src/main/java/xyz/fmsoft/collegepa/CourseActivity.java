@@ -1,6 +1,7 @@
 package xyz.fmsoft.collegepa;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -38,9 +39,10 @@ import butterknife.ButterKnife;
 import xyz.fmsoft.collegepa.Course.Course;
 import xyz.fmsoft.collegepa.utils.ColorPickerDialog;
 import xyz.fmsoft.collegepa.utils.Constants;
+import xyz.fmsoft.collegepa.utils.DeleteDialog;
 import xyz.fmsoft.collegepa.utils.FingerPrintDialog;
 
-public class CourseActivity extends AppCompatActivity implements ColorPickerDialog.OnCompleteListener{
+public class CourseActivity extends AppCompatActivity implements ColorPickerDialog.OnCompleteListener, DeleteDialog.OnDeleteListener{
 
 
 
@@ -219,21 +221,8 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
             //TODO: call changeColor();
         }
         else if(id == R.id.action_delete){
-            AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
-            builder.setMessage("Are You Sure?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    deleteDialog(true);
-                    dialog.dismiss();
-                }
-            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            }).show();
-
-
+            DeleteDialog deleteDialog = new DeleteDialog();
+            deleteDialog.show(getSupportFragmentManager(),"DeleteDialog");
         }
 
         if (id == android.R.id.home){
@@ -249,8 +238,23 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
         courseName = getSupportActionBar().getTitle().toString();// Ensure that courseName does not have default "Course Name Value
         DatabaseReference courseRef = root.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Courses").child(courseName);
         courseRef.child("color").setValue(value);
+        Intent refresh = new Intent(this, DrawerActivity.class);
+        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(refresh);
         finish();
         //TODO: Refresh Activity
+    }
+
+    @Override
+    public void shouldDelete(boolean delete) {
+        courseName = getSupportActionBar().getTitle().toString();
+        DatabaseReference courseRef = root.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Courses").child(courseName);
+        courseRef.setValue(null);
+        Intent refresh = new Intent(this, DrawerActivity.class);
+        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(refresh);
+        finish();
+
     }
 
 
@@ -301,21 +305,7 @@ public class CourseActivity extends AppCompatActivity implements ColorPickerDial
     }
 
 
-    public void changeColor(String color){
-        DatabaseReference user = root.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        user.child("Courses").child(courseName).child("color").setValue(color);
-    }
 
-    public void deleteDialog(boolean delete){
-
-        if(delete){
-            //Delete The Course
-
-        }
-        else{
-            //Do nothing
-        }
-    }
 
 
 }
