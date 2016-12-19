@@ -61,5 +61,5 @@ Course Main Page:
 ![alt tag](https://github.com/FMurry/CollegePA/blob/master/Screenshots/Course.png)
 
 <br>
-Maintained by Frederic Murry and Erick Vazquez
+Maintained by Frederic Murry
 
